@@ -1,0 +1,24 @@
+{
+	"name": "modules/moonlaunch",
+	"description": "Starter kit for moonshine",
+	"type": "library",
+	"version": "1.0",
+	"license": "MIT",
+	"require": {},
+	"autoload": {
+		"psr-4": {
+			"Modules\\Moonlaunch\\": "src/",
+			"Modules\\Moonlaunch\\Tests\\": "tests/",
+			"Modules\\Moonlaunch\\Database\\Factories\\": "database/factories/",
+			"Modules\\Moonlaunch\\Database\\Seeders\\": "database/seeders/"
+		}
+	},
+	"minimum-stability": "stable",
+	"extra": {
+		"laravel": {
+			"providers": [
+				"Modules\\Moonlaunch\\Providers\\MoonlaunchServiceProvider"
+			]
+		}
+	}
+}
