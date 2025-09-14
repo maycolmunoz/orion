@@ -2,6 +2,7 @@
 
 namespace Modules\Moonlaunch\Traits;
 
+use MoonShine\Support\Enums\ClickAction;
 use MoonShine\Support\Enums\PageType;
 
 trait Properties
@@ -25,9 +26,19 @@ trait Properties
         return $this->set('title', $title);
     }
 
+    protected function setAlias(string $alias): static
+    {
+        return $this->set('alias', $alias);
+    }
+
     protected function with(array $with): static
     {
         return $this->set('with', $with);
+    }
+
+    protected function withPolicy(): static
+    {
+        return $this->set('withPolicy', true);
     }
 
     protected function column(string $column): static
@@ -55,50 +66,75 @@ trait Properties
         return $this->set('redirectAfterSave', $redirectAfterSave);
     }
 
+    protected function saveQueryState(): static
+    {
+        return $this->set('saveQueryState', true);
+    }
+
+    protected function queryTagsInDropdown(): static
+    {
+        return $this->set('queryTagsInDropdown', true);
+    }
+
     // ─────────────────────────────────────────────
     // 🔹 Modal
     // ─────────────────────────────────────────────
 
-    protected function createInModal(bool $createInModal = true): static
+    protected function createInModal(): static
     {
-        return $this->set('createInModal', $createInModal);
+        return $this->set('createInModal', true);
     }
 
-    protected function editInModal(bool $editInModal = true): static
+    protected function editInModal(): static
     {
-        return $this->set('editInModal', $editInModal);
+        return $this->set('editInModal', true);
     }
 
-    protected function detailInModal(bool $detailInModal = true): static
+    protected function detailInModal(): static
     {
-        return $this->set('detailInModal', $detailInModal);
+        return $this->set('detailInModal', true);
     }
 
     protected function allInModal(): static
     {
         return $this
-            ->createInModal(true)
-            ->editInModal(true)
-            ->detailInModal(true);
+            ->createInModal()
+            ->editInModal()
+            ->detailInModal();
     }
 
     // ─────────────────────────────────────────────
     // 🔹 UI / Table
     // ─────────────────────────────────────────────
 
-    protected function columnSelection(bool $columnSelection = true): static
+    protected function columnSelection(): static
     {
-        return $this->set('columnSelection', $columnSelection);
+        return $this->set('columnSelection', true);
     }
 
-    protected function stickyTable(bool $stickyTable = true): static
+    protected function stickyTable(): static
     {
-        return $this->set('stickyTable', $stickyTable);
+        return $this->set('stickyTable', true);
     }
 
-    protected function errorsAbove(bool $errorsAbove = true): static
+    protected function stickyButtons(): static
+    {
+        return $this->set('stickyButtons', true);
+    }
+
+    protected function errorsAbove(bool $errorsAbove): static
     {
         return $this->set('errorsAbove', $errorsAbove);
+    }
+
+    protected function indexButtonsInDropdown(): static
+    {
+        return $this->set('indexButtonsInDropdown', true);
+    }
+
+    protected function clickAction(ClickAction $clickAction): static
+    {
+        return $this->set('clickAction', $clickAction);
     }
 
     // ─────────────────────────────────────────────
@@ -108,5 +144,15 @@ trait Properties
     protected function itemsPerPage(int $itemsPerPage): static
     {
         return $this->set('itemsPerPage', $itemsPerPage);
+    }
+
+    protected function cursorPaginate(): static
+    {
+        return $this->set('cursorPaginate', true);
+    }
+
+    protected function simplePaginate(): static
+    {
+        return $this->set('simplePaginate', true);
     }
 }
