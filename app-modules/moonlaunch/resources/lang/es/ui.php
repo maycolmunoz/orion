@@ -17,4 +17,12 @@ return [
         'change_password' => 'Cambiar contraseña',
     ],
 
+    'soft_deletes' => [
+        'trashed' => 'Eliminados',
+        'restore' => 'Restaurar',
+        'force_delete' => 'Eliminar permanentemente',
+        'item_deleted' => 'Elemento eliminado',
+        'item_restored' => 'Elemento restaurado',
+    ],
+
 ];

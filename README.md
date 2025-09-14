@@ -17,6 +17,8 @@
 
 -   Fully pre-configured MoonShine
 -   Ready-to-use modular architecture
+-   Trait for applying chainable properties to resources  
+-   Trait for implementing soft deletes 
 
 ### 🔐 Security
 

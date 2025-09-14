@@ -7,6 +7,7 @@ namespace Modules\Moonlaunch\MoonShine\Resources;
 use Illuminate\Validation\Rule;
 use Modules\Moonlaunch\Models\User;
 use Modules\Moonlaunch\Traits\Properties;
+use Modules\Moonlaunch\Traits\SoftDeletesResource;
 use MoonShine\Contracts\UI\FieldContract;
 use MoonShine\Laravel\Fields\Relationships\BelongsToMany;
 use MoonShine\Laravel\Resources\ModelResource;
@@ -34,6 +35,7 @@ use Sweet1s\MoonshineRBAC\Traits\WithRolePermissions;
 class AdminResource extends ModelResource
 {
     use Properties;
+    use SoftDeletesResource;
     use WithRoleFormComponent;
     use WithRolePermissions;
 
