@@ -173,7 +173,8 @@ class AdminResource extends ModelResource
     protected function filters(): iterable
     {
         return [
-            BelongsToMany::make('roles')->translatable('moonlaunch::ui.resource'),
+            BelongsToMany::make('roles')->translatable('moonlaunch::ui.resource')
+                ->selectMode(),
         ];
     }
 }

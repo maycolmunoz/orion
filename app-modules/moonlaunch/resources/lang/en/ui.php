@@ -5,6 +5,7 @@ return [
         'system' => 'System',
         'role' => 'Role',
         'roles' => 'Roles',
+        'permissions' => 'Permissions',
         'name' => 'Name',
         'email' => 'Email',
         'password' => 'Password',
