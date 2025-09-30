@@ -5,10 +5,10 @@ namespace Modules\Moonlaunch\Traits;
 use MoonShine\Support\Enums\ClickAction;
 use MoonShine\Support\Enums\PageType;
 
-trait Properties
+trait WithProperties
 {
     /**
-     * Setter genérico
+     * Setter
      */
     protected function set(string $property, mixed $value): static
     {

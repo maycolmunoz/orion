@@ -11,7 +11,7 @@ use MoonShine\Support\Enums\ToastType;
 use MoonShine\Support\ListOf;
 use MoonShine\UI\Components\ActionButton;
 
-trait SoftDeletesResource
+trait WithSoftDeletes
 {
     protected function indexButtons(): ListOf
     {
