@@ -55,7 +55,6 @@ class AdminResource extends ModelResource
      */
     protected function indexFields(): iterable
     {
-
         return [
             ID::make()->sortable(),
 
@@ -78,6 +77,9 @@ class AdminResource extends ModelResource
         ];
     }
 
+    /**
+     * @return list<ComponentContract|FieldContract>
+     */
     protected function formFields(): iterable
     {
         return [
@@ -89,30 +91,26 @@ class AdminResource extends ModelResource
                         Flex::make([
                             Text::make('name')->translatable('moon-launch::ui.resource')
                                 ->required(),
-
                             Email::make('email')->translatable('moon-launch::ui.resource')
                                 ->required(),
                         ]),
 
-                        // Image::make('avatar')->translatable('moon-launch::ui.resource')
-                        //     ->disk(moonshineConfig()->getDisk())
-                        //     ->dir('moonshine_users')
-                        //     ->allowedExtensions(['jpg', 'png', 'jpeg', 'gif']),
-
                         Flex::make([
                             Password::make('password')->translatable('moon-launch::ui.resource')
                                 ->customAttributes(['autocomplete' => 'new-password'])
+                                ->required()
                                 ->eye(),
-
                             PasswordRepeat::make('password_repeat')
                                 ->translatable('moon-launch::ui.resource')
                                 ->customAttributes(['autocomplete' => 'confirm-password'])
+                                ->required()
                                 ->eye(),
-                        ])->canSee(fn () => ! $this->item),
+                        ])->canSee(fn () => $this->isCreateFormPage()),
 
-                        Date::make('created_at')->translatable('moon-launch::ui.resource')
-                            ->format('d.m.Y')
-                            ->default(now()->toDateTimeString()),
+                        // Image::make('avatar')->translatable('moon-launch::ui.resource')
+                        //     ->disk(moonshineConfig()->getDisk())
+                        //     ->dir('moonshine_users')
+                        //     ->allowedExtensions(['jpg', 'png', 'jpeg', 'gif', 'webp']),
                     ])->icon('user-circle'),
 
                     Tab::make(__('moon-launch::ui.resource.password'), [
@@ -120,14 +118,12 @@ class AdminResource extends ModelResource
                             Password::make('password')->translatable('moon-launch::ui.resource')
                                 ->customAttributes(['autocomplete' => 'new-password'])
                                 ->eye(),
-
-                            PasswordRepeat::make('password_repeat')
-                                ->translatable('moon-launch::ui.resource')
+                            PasswordRepeat::make('password_repeat')->translatable('moon-launch::ui.resource')
                                 ->customAttributes(['autocomplete' => 'confirm-password'])
                                 ->eye(),
                         ])->icon('lock-closed'),
-                    ])->canSee(fn () => $this->item)
-                        ->icon('lock-closed'),
+                    ])->icon('lock-closed')->canSee(fn () => $this->isUpdateFormPage()),
+
                 ]),
             ]),
         ];
@@ -163,11 +159,7 @@ class AdminResource extends ModelResource
 
     protected function search(): array
     {
-        return [
-            'id',
-            'name',
-            'email',
-        ];
+        return ['id', 'name', 'email'];
     }
 
     protected function filters(): iterable

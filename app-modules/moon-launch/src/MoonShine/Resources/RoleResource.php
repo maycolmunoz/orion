@@ -60,7 +60,8 @@ class RoleResource extends ModelResource
                 ->sortable(),
             Text::make('permissions', 'permissions_count')
                 ->translatable('moon-launch::ui.resource')
-                ->sortable(),
+                ->sortable()
+                ->badge(),
         ];
     }
 
@@ -93,9 +94,6 @@ class RoleResource extends ModelResource
 
     protected function search(): array
     {
-        return [
-            'id',
-            'name',
-        ];
+        return ['id', 'name'];
     }
 }

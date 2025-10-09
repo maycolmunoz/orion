@@ -11,6 +11,9 @@ class ThemeApplier
      */
     public function __construct(private ColorManagerContract $colorManager) {}
 
+    /**
+     * theme1
+     */
     public function theme1(): void
     {
         $this->applyTheme([
@@ -23,6 +26,9 @@ class ThemeApplier
         ]);
     }
 
+    /**
+     * theme2
+     */
     public function theme2(): void
     {
         $this->applyTheme([
@@ -35,6 +41,9 @@ class ThemeApplier
         ]);
     }
 
+    /**
+     * theme3
+     */
     public function theme3(): void
     {
         $this->applyTheme([
@@ -47,6 +56,9 @@ class ThemeApplier
         ]);
     }
 
+    /**
+     * theme4
+     */
     public function theme4(): void
     {
         $this->applyTheme([
@@ -59,6 +71,11 @@ class ThemeApplier
         ]);
     }
 
+    /**
+     * applyTheme
+     *
+     * @param  mixed  $colors
+     */
     private function applyTheme(array $colors): void
     {
         $this->colorManager

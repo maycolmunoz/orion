@@ -13,6 +13,9 @@ use MoonShine\UI\Components\ActionButton;
 
 trait WithSoftDeletes
 {
+    /**
+     * indexButtons
+     */
     protected function indexButtons(): ListOf
     {
         return parent::indexButtons()
@@ -31,6 +34,9 @@ trait WithSoftDeletes
             );
     }
 
+    /**
+     * queryTags
+     */
     protected function queryTags(): array
     {
         return [
@@ -41,11 +47,21 @@ trait WithSoftDeletes
         ];
     }
 
+    /**
+     * modifyItemQueryBuilder
+     *
+     * @param  mixed  $builder
+     */
     protected function modifyItemQueryBuilder(Builder $builder): Builder
     {
         return $builder->withTrashed();
     }
 
+    /**
+     * restore
+     *
+     * @param  mixed  $request
+     */
     public function restore(MoonShineRequest $request): MoonShineJsonResponse
     {
         $item = $request->getResource()->getItem();
@@ -58,6 +74,11 @@ trait WithSoftDeletes
             );
     }
 
+    /**
+     * forceDelete
+     *
+     * @param  mixed  $request
+     */
     public function forceDelete(MoonShineRequest $request): MoonShineJsonResponse
     {
         $item = $request->getResource()->getItem();
@@ -70,11 +91,21 @@ trait WithSoftDeletes
             );
     }
 
+    /**
+     * modifyDeleteButton
+     *
+     * @param  mixed  $button
+     */
     protected function modifyDeleteButton(ActionButtonContract $button): ActionButtonContract
     {
         return $button->canSee(fn ($model) => ! $model->trashed());
     }
 
+    /**
+     * modifyMassDeleteButton
+     *
+     * @param  mixed  $button
+     */
     protected function modifyMassDeleteButton(ActionButtonContract $button): ActionButtonContract
     {
         return $button->canSee(fn () => request()->input('query-tag') !== 'deleted');

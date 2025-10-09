@@ -11,6 +11,9 @@ use Sweet1s\MoonshineRBAC\Resource\PermissionResource;
 
 class Launch
 {
+    /**
+     * getResources
+     */
     public function getResources(): array
     {
         return [
@@ -20,6 +23,9 @@ class Launch
         ];
     }
 
+    /**
+     * getMenu
+     */
     public function getMenu(): array
     {
         return MenuRBAC::menu(
