@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Moonlaunch\Traits;
+namespace Modules\MoonLaunch\Traits;
 
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use MoonShine\Contracts\UI\ActionButtonContract;
@@ -18,16 +18,16 @@ trait WithSoftDeletes
         return parent::indexButtons()
             ->prepend(
                 ActionButton::make('')->icon('s.arrow-uturn-right')
-                    ->customAttributes(['title' => __('moonlaunch::ui.soft_deletes.force_delete')])
+                    ->customAttributes(['title' => __('moon-launch::ui.soft_deletes.force_delete')])
                     ->method('forceDelete', events: [$this->getListEventName()])
                     ->canSee(fn ($model) => $model->trashed())
-                    ->withConfirm(__('moonlaunch::ui.soft_deletes.force_delete')),
+                    ->withConfirm(__('moon-launch::ui.soft_deletes.force_delete')),
 
                 ActionButton::make('')->icon('s.arrow-uturn-left')
-                    ->customAttributes(['title' => __('moonlaunch::ui.soft_deletes.restore')])
+                    ->customAttributes(['title' => __('moon-launch::ui.soft_deletes.restore')])
                     ->method('restore', events: [$this->getListEventName()])
                     ->canSee(fn ($model) => $model->trashed())
-                    ->withConfirm(__('moonlaunch::ui.soft_deletes.restore')),
+                    ->withConfirm(__('moon-launch::ui.soft_deletes.restore')),
             );
     }
 
@@ -35,7 +35,7 @@ trait WithSoftDeletes
     {
         return [
             QueryTag::make(
-                __('moonlaunch::ui.soft_deletes.trashed'),
+                __('moon-launch::ui.soft_deletes.trashed'),
                 static fn (Builder $q) => $q->onlyTrashed()
             ),
         ];
@@ -53,7 +53,7 @@ trait WithSoftDeletes
 
         return MoonShineJsonResponse::make()
             ->toast(
-                __('moonlaunch::ui.soft_deletes.item_restored'),
+                __('moon-launch::ui.soft_deletes.item_restored'),
                 ToastType::SUCCESS
             );
     }
@@ -65,7 +65,7 @@ trait WithSoftDeletes
 
         return MoonShineJsonResponse::make()
             ->toast(
-                __('moonlaunch::ui.soft_deletes.item_deleted'),
+                __('moon-launch::ui.soft_deletes.item_deleted'),
                 ToastType::SUCCESS
             );
     }

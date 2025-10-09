@@ -1,9 +1,9 @@
 <?php
 
-namespace Modules\Moonlaunch\Services;
+namespace Modules\MoonLaunch\Services;
 
-use Modules\Moonlaunch\MoonShine\Resources\AdminResource;
-use Modules\Moonlaunch\MoonShine\Resources\RoleResource;
+use Modules\MoonLaunch\MoonShine\Resources\AdminResource;
+use Modules\MoonLaunch\MoonShine\Resources\RoleResource;
 use MoonShine\MenuManager\MenuGroup;
 use MoonShine\MenuManager\MenuItem;
 use Sweet1s\MoonshineRBAC\Components\MenuRBAC;
@@ -25,10 +25,10 @@ class Launch
         return MenuRBAC::menu(
             MenuGroup::make('system', [
                 MenuItem::make('admins_title', AdminResource::class)
-                    ->translatable('moonlaunch::ui.resource'),
+                    ->translatable('moon-launch::ui.resource'),
 
                 MenuItem::make('roles', RoleResource::class)
-                    ->translatable('moonlaunch::ui.resource'),
+                    ->translatable('moon-launch::ui.resource'),
 
                 MenuItem::make('permissions', PermissionResource::class)
                     ->translatable('moonshine-rbac::ui')

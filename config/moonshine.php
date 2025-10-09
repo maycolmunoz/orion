@@ -57,7 +57,7 @@ return [
     'auth' => [
         'enabled' => true,
         'guard' => 'moonshine',
-        'model' => \Modules\Moonlaunch\Models\User::class,
+        'model' => \Modules\MoonLaunch\Models\User::class,
         'middleware' => Authenticate::class,
         'pipelines' => [],
     ],

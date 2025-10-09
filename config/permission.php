@@ -24,7 +24,7 @@ return [
          * `Spatie\Permission\Contracts\Role` contract.
          */
 
-        'role' => \Modules\Moonlaunch\Models\Role::class,
+        'role' => \Modules\MoonLaunch\Models\Role::class,
 
     ],
 

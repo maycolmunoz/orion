@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Moonlaunch\Models;
+namespace Modules\MoonLaunch\Models;
 
 use App\Models\User as ModelsUser;
 use Illuminate\Database\Eloquent\SoftDeletes;

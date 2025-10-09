@@ -1,14 +1,14 @@
 <?php
 
-namespace Modules\Moonlaunch\Providers;
+namespace Modules\MoonLaunch\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Modules\Moonlaunch\Services\Launch;
-use Modules\Moonlaunch\Services\ThemeApplier;
+use Modules\MoonLaunch\Services\Launch;
+use Modules\MoonLaunch\Services\ThemeApplier;
 use MoonShine\Contracts\ColorManager\ColorManagerContract;
 use MoonShine\Contracts\Core\DependencyInjection\CoreContract;
 
-class MoonlaunchServiceProvider extends ServiceProvider
+class MoonLaunchServiceProvider extends ServiceProvider
 {
     public function register(): void
     {

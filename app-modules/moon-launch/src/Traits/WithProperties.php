@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Moonlaunch\Traits;
+namespace Modules\MoonLaunch\Traits;
 
 use MoonShine\Support\Enums\ClickAction;
 use MoonShine\Support\Enums\PageType;

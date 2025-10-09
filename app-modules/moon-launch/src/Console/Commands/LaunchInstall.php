@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Moonlaunch\Console\Commands;
+namespace Modules\MoonLaunch\Console\Commands;
 
 use Illuminate\Console\Command;
 
@@ -37,6 +37,6 @@ class LaunchInstall extends Command
         $this->info('👤 Creating Super Admin user...');
         $this->call('moonshine-rbac:user');
 
-        $this->info('✅ Moonlaunch installed successfully.');
+        $this->info('✅ MoonLaunch installed successfully.');
     }
 }

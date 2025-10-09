@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Modules\Moonlaunch\MoonShine\Resources;
+namespace Modules\MoonLaunch\MoonShine\Resources;
 
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Validation\Rule;
-use Modules\Moonlaunch\Models\Role;
-use Modules\Moonlaunch\Traits\WithProperties;
+use Modules\MoonLaunch\Models\Role;
+use Modules\MoonLaunch\Traits\WithProperties;
 use MoonShine\Contracts\UI\ComponentContract;
 use MoonShine\Contracts\UI\FieldContract;
 use MoonShine\Laravel\Enums\Action;
@@ -34,7 +34,7 @@ class RoleResource extends ModelResource
 
     public function __construct()
     {
-        $this->title(__('moonlaunch::ui.resource.roles'))
+        $this->title(__('moon-launch::ui.resource.roles'))
             ->redirectAfterSave(PageType::FORM)
             ->itemsPerPage(20)
             ->column('name');
@@ -56,10 +56,10 @@ class RoleResource extends ModelResource
     protected function indexFields(): iterable
     {
         return [
-            Text::make('name')->translatable('moonlaunch::ui.resource')
+            Text::make('name')->translatable('moon-launch::ui.resource')
                 ->sortable(),
             Text::make('permissions', 'permissions_count')
-                ->translatable('moonlaunch::ui.resource')
+                ->translatable('moon-launch::ui.resource')
                 ->sortable(),
         ];
     }
@@ -71,7 +71,7 @@ class RoleResource extends ModelResource
     {
         return [
             Box::make([
-                Text::make('name')->translatable('moonlaunch::ui.resource')
+                Text::make('name')->translatable('moon-launch::ui.resource')
                     ->required(),
             ]),
         ];

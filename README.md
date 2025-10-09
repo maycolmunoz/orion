@@ -25,7 +25,7 @@
 -   Integrated RBAC (Roles and Permissions) system
 -   Command for automatic permission generation
 
-Permissions are automatically generated using the [`LaunchPermissions`](app-modules/moonlaunch/src/Console/Commands/LaunchPermissions.php) command. This command scans the **registered MoonShine resources** and creates the necessary permissions automatically.
+Permissions are automatically generated using the [`LaunchPermissions`](app-modules/moon-launch/src/Console/Commands/LaunchPermissions.php) command. This command scans the **registered MoonShine resources** and creates the necessary permissions automatically.
 
 ### 🎨 Interface
 
@@ -38,7 +38,7 @@ Permissions are automatically generated using the [`LaunchPermissions`](app-modu
 | --------------------------------- | --------------------------------- | --------------------------------- | --------------------------------- |
 | ![Theme 1](./_docs/themes/1.webp) | ![Theme 2](./_docs/themes/2.webp) | ![Theme 3](./_docs/themes/3.webp) | ![Theme 4](./_docs/themes/4.webp) |
 
-Themes can be switched in the [`MoonlaunchServiceProvider`](app-modules/moonlaunch/src/Providers/MoonlaunchServiceProvider.php)
+Themes can be switched in the [`MoonlaunchServiceProvider`](app-modules/moon-launch/src/Providers/MoonLaunchServiceProvider.php)
 
 
 ## 🚀 Installation

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e1bc7a3d19080e36fab5187af36c3424",
+    "content-hash": "f354a7b906fb4f40615918fecf22fa08",
     "packages": [
         {
             "name": "brick/math",
@@ -2947,27 +2947,27 @@
             "time": "2024-11-28T04:54:44+00:00"
         },
         {
-            "name": "modules/moonlaunch",
+            "name": "modules/moon-launch",
             "version": "1.0",
             "dist": {
                 "type": "path",
-                "url": "app-modules/moonlaunch",
-                "reference": "349c79c5886a2865d5d58992001060c1df6fe4da"
+                "url": "app-modules/moon-launch",
+                "reference": "e1a98e97def415a794621d62815cb69ab5ce5aad"
             },
             "type": "library",
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Modules\\Moonlaunch\\Providers\\MoonlaunchServiceProvider"
+                        "Modules\\MoonLaunch\\Providers\\MoonLaunchServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Modules\\Moonlaunch\\": "src/",
-                    "Modules\\Moonlaunch\\Tests\\": "tests/",
-                    "Modules\\Moonlaunch\\Database\\Factories\\": "database/factories/",
-                    "Modules\\Moonlaunch\\Database\\Seeders\\": "database/seeders/"
+                    "Modules\\MoonLaunch\\": "src/",
+                    "Modules\\MoonLaunch\\Tests\\": "tests/",
+                    "Modules\\MoonLaunch\\Database\\Factories\\": "database/factories/",
+                    "Modules\\MoonLaunch\\Database\\Seeders\\": "database/seeders/"
                 }
             },
             "license": [
