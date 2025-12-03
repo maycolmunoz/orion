@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\MoonShine\Layouts;
 
 use Modules\MoonLaunch\Services\Launch;
-use MoonShine\ColorManager\ColorManager;
-use MoonShine\Contracts\ColorManager\ColorManagerContract;
 use MoonShine\Laravel\Layouts\AppLayout;
 use MoonShine\UI\Components\Layout\Favicon;
 use MoonShine\UI\Components\Layout\Footer;
@@ -46,14 +44,6 @@ final class MoonShineLayout extends AppLayout
         return [
             ...app(Launch::class)->getMenu(),
         ];
-    }
-
-    /**
-     * @param  ColorManager  $colorManager
-     */
-    protected function colors(ColorManagerContract $colorManager): void
-    {
-        // parent::colors($colorManager);
     }
 
     public function build(): Layout

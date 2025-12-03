@@ -2,12 +2,11 @@
 
 namespace Modules\MoonLaunch\Services;
 
-use Modules\MoonLaunch\MoonShine\Resources\AdminResource;
-use Modules\MoonLaunch\MoonShine\Resources\RoleResource;
+use Modules\MoonLaunch\MoonShine\Resources\Admin\AdminResource;
+use Modules\MoonLaunch\MoonShine\Resources\Role\RoleResource;
 use MoonShine\MenuManager\MenuGroup;
 use MoonShine\MenuManager\MenuItem;
 use Sweet1s\MoonshineRBAC\Components\MenuRBAC;
-use Sweet1s\MoonshineRBAC\Resource\PermissionResource;
 
 class Launch
 {
@@ -19,7 +18,6 @@ class Launch
         return [
             AdminResource::class,
             RoleResource::class,
-            PermissionResource::class,
         ];
     }
 
@@ -28,17 +26,14 @@ class Launch
      */
     public function getMenu(): array
     {
-        return MenuRBAC::menu(
+        return
+        MenuRBAC::menu(
             MenuGroup::make('system', [
-                MenuItem::make('admins_title', AdminResource::class)
+                MenuItem::make(AdminResource::class, 'admins_title')
                     ->translatable('moon-launch::ui.resource'),
 
-                MenuItem::make('roles', RoleResource::class)
+                MenuItem::make(RoleResource::class, 'roles')
                     ->translatable('moon-launch::ui.resource'),
-
-                MenuItem::make('permissions', PermissionResource::class)
-                    ->translatable('moonshine-rbac::ui')
-                    ->icon('s.shield-check'),
             ])
                 ->translatable('moonshine::ui.resource')
                 ->icon('m.cube')

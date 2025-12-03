@@ -2,85 +2,39 @@
 
 declare(strict_types=1);
 
-namespace Modules\MoonLaunch\MoonShine\Resources;
+namespace Modules\MoonLaunch\MoonShine\Resources\Admin\Pages;
 
 use Illuminate\Validation\Rule;
-use Modules\MoonLaunch\Models\User;
-use Modules\MoonLaunch\Traits\WithProperties;
-use Modules\MoonLaunch\Traits\WithSoftDeletes;
+use Modules\MoonLaunch\MoonShine\Resources\Admin\AdminResource;
+use MoonShine\Contracts\Core\TypeCasts\DataWrapperContract;
+use MoonShine\Contracts\UI\ComponentContract;
 use MoonShine\Contracts\UI\FieldContract;
-use MoonShine\Laravel\Fields\Relationships\BelongsToMany;
-use MoonShine\Laravel\Resources\ModelResource;
-use MoonShine\Support\Attributes\Icon;
-use MoonShine\UI\Components\Badge;
+use MoonShine\Contracts\UI\FormBuilderContract;
+use MoonShine\Laravel\Pages\Crud\FormPage;
+use MoonShine\Support\ListOf;
 use MoonShine\UI\Components\Collapse;
+use MoonShine\UI\Components\FormBuilder;
 use MoonShine\UI\Components\Layout\Box;
 use MoonShine\UI\Components\Layout\Flex;
 use MoonShine\UI\Components\Tabs;
 use MoonShine\UI\Components\Tabs\Tab;
-use MoonShine\UI\Fields\Date;
 use MoonShine\UI\Fields\Email;
 use MoonShine\UI\Fields\ID;
 use MoonShine\UI\Fields\Image;
 use MoonShine\UI\Fields\Password;
 use MoonShine\UI\Fields\PasswordRepeat;
 use MoonShine\UI\Fields\Text;
-use Sweet1s\MoonshineRBAC\Traits\WithRoleFormComponent;
-use Sweet1s\MoonshineRBAC\Traits\WithRolePermissions;
+use Throwable;
 
-#[Icon('s.user-group')]
 /**
- * @extends ModelResource<User>
+ * @extends FormPage<AdminResource>
  */
-class AdminResource extends ModelResource
+class AdminFormPage extends FormPage
 {
-    use WithProperties;
-    use WithRoleFormComponent;
-    use WithRolePermissions;
-    use WithSoftDeletes;
-
-    protected string $model = User::class;
-
-    public function __construct()
-    {
-        $this->title(__('moon-launch::ui.resource.admins_title'))
-            ->columnSelection()
-            ->with(['roles'])
-            ->column('name')
-            ->isAsync(false);
-    }
-
-    /**
-     * @return list<FieldContract>
-     */
-    protected function indexFields(): iterable
-    {
-        return [
-            ID::make()->sortable(),
-
-            //  Image::make('avatar')->translatable('moon-launch::ui.resource')
-            //     ->modifyRawValue(fn(?string $raw): string => $raw ?? ''),
-
-            Text::make('name')->translatable('moon-launch::ui.resource'),
-
-            BelongsToMany::make('roles')->translatable('moon-launch::ui.resource')
-                ->inLine(
-                    separator: ' ',
-                    badge: fn ($model, $value) => Badge::make((string) $value, 'primary'),
-                ),
-
-            Email::make('email')->translatable('moon-launch::ui.resource'),
-
-            Date::make('created_at')->translatable('moon-launch::ui.resource')
-                ->format('d/M/Y')
-                ->sortable(),
-        ];
-    }
-
     /**
      * @return list<ComponentContract|FieldContract>
      */
-    protected function formFields(): iterable
+    protected function fields(): iterable
     {
         return [
             Box::make([
@@ -105,7 +59,7 @@ class AdminResource extends ModelResource
                                 ->customAttributes(['autocomplete' => 'confirm-password'])
                                 ->required()
                                 ->eye(),
-                        ])->canSee(fn () => $this->isCreateFormPage()),
+                        ])->canSee(fn () => $this->resource->isCreateFormPage()),
 
                         // Image::make('avatar')->translatable('moon-launch::ui.resource')
                         //     ->disk(moonshineConfig()->getDisk())
@@ -122,25 +76,23 @@ class AdminResource extends ModelResource
                                 ->customAttributes(['autocomplete' => 'confirm-password'])
                                 ->eye(),
                         ])->icon('lock-closed'),
-                    ])->icon('lock-closed')->canSee(fn () => $this->isUpdateFormPage()),
-
+                    ])->icon('lock-closed')->canSee(fn () => $this->resource->isUpdateFormPage()),
                 ]),
             ]),
         ];
     }
 
-    /**
-     * @return list<FieldContract>
-     */
-    protected function detailFields(): iterable
+    protected function buttons(): ListOf
     {
-        return $this->indexFields();
+        return parent::buttons();
     }
 
-    /**
-     * @return array{name: array|string, moonshine_user_role_id: array|string, email: array|string, password: array|string}
-     */
-    protected function rules($item): array
+    protected function formButtons(): ListOf
+    {
+        return parent::formButtons();
+    }
+
+    protected function rules(DataWrapperContract $item): array
     {
         return [
             'name' => 'required',
@@ -157,16 +109,48 @@ class AdminResource extends ModelResource
         ];
     }
 
-    protected function search(): array
+    /**
+     * @param  FormBuilder  $component
+     * @return FormBuilder
+     */
+    protected function modifyFormComponent(FormBuilderContract $component): FormBuilderContract
     {
-        return ['id', 'name', 'email'];
+        return $component;
     }
 
-    protected function filters(): iterable
+    /**
+     * @return list<ComponentContract>
+     *
+     * @throws Throwable
+     */
+    protected function topLayer(): array
     {
         return [
-            BelongsToMany::make('roles')->translatable('moon-launch::ui.resource')
-                ->selectMode(),
+            ...parent::topLayer(),
+        ];
+    }
+
+    /**
+     * @return list<ComponentContract>
+     *
+     * @throws Throwable
+     */
+    protected function mainLayer(): array
+    {
+        return [
+            ...parent::mainLayer(),
+        ];
+    }
+
+    /**
+     * @return list<ComponentContract>
+     *
+     * @throws Throwable
+     */
+    protected function bottomLayer(): array
+    {
+        return [
+            ...parent::bottomLayer(),
         ];
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Modules\MoonLaunch\Traits;
 
-use MoonShine\Support\Enums\ClickAction;
 use MoonShine\Support\Enums\PageType;
 
 trait WithProperties
@@ -51,14 +50,14 @@ trait WithProperties
         return $this->set('sortColumn', $sortColumn);
     }
 
+    protected function sortDirection(string $sortDirection): static
+    {
+        return $this->set('sortDirection', $sortDirection);
+    }
+
     protected function async(bool $isAsync): static
     {
         return $this->set('isAsync', $isAsync);
-    }
-
-    protected function precognitive(bool $precognitive): static
-    {
-        return $this->set('isPrecognitive', $precognitive);
     }
 
     protected function redirectAfterSave(PageType $redirectAfterSave): static
@@ -69,11 +68,6 @@ trait WithProperties
     protected function saveQueryState(): static
     {
         return $this->set('saveQueryState', true);
-    }
-
-    protected function queryTagsInDropdown(): static
-    {
-        return $this->set('queryTagsInDropdown', true);
     }
 
     // ─────────────────────────────────────────────
@@ -101,40 +95,6 @@ trait WithProperties
             ->createInModal()
             ->editInModal()
             ->detailInModal();
-    }
-
-    // ─────────────────────────────────────────────
-    // 🔹 UI / Table
-    // ─────────────────────────────────────────────
-
-    protected function columnSelection(): static
-    {
-        return $this->set('columnSelection', true);
-    }
-
-    protected function stickyTable(): static
-    {
-        return $this->set('stickyTable', true);
-    }
-
-    protected function stickyButtons(): static
-    {
-        return $this->set('stickyButtons', true);
-    }
-
-    protected function errorsAbove(bool $errorsAbove): static
-    {
-        return $this->set('errorsAbove', $errorsAbove);
-    }
-
-    protected function indexButtonsInDropdown(): static
-    {
-        return $this->set('indexButtonsInDropdown', true);
-    }
-
-    protected function clickAction(ClickAction $clickAction): static
-    {
-        return $this->set('clickAction', $clickAction);
     }
 
     // ─────────────────────────────────────────────

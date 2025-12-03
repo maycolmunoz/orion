@@ -7,9 +7,9 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use MoonShine\Crud\Forms\FiltersForm;
+use MoonShine\Crud\Forms\LoginForm;
 use MoonShine\Laravel\Exceptions\MoonShineNotFoundException;
-use MoonShine\Laravel\Forms\FiltersForm;
-use MoonShine\Laravel\Forms\LoginForm;
 use MoonShine\Laravel\Http\Middleware\Authenticate;
 use MoonShine\Laravel\Http\Middleware\ChangeLocale;
 use MoonShine\Laravel\Pages\ErrorPage;
@@ -72,6 +72,9 @@ return [
 
     // Layout, pages, forms
     'layout' => App\MoonShine\Layouts\MoonShineLayout::class,
+
+    // global color palette
+    'palette' => \MoonShine\ColorManager\Palettes\CyanPalette::class,
 
     'forms' => [
         'login' => LoginForm::class,

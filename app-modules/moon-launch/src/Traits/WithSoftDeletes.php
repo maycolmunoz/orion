@@ -3,41 +3,39 @@
 namespace Modules\MoonLaunch\Traits;
 
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use MoonShine\Contracts\Core\DependencyInjection\CrudRequestContract;
 use MoonShine\Contracts\UI\ActionButtonContract;
-use MoonShine\Laravel\Http\Responses\MoonShineJsonResponse;
-use MoonShine\Laravel\MoonShineRequest;
+use MoonShine\Crud\JsonResponse;
 use MoonShine\Laravel\QueryTags\QueryTag;
+use MoonShine\Support\Attributes\AsyncMethod;
 use MoonShine\Support\Enums\ToastType;
-use MoonShine\Support\ListOf;
 use MoonShine\UI\Components\ActionButton;
 
 trait WithSoftDeletes
 {
     /**
-     * indexButtons
+     * trashActions
      */
-    protected function indexButtons(): ListOf
+    protected function trashActions(): array
     {
-        return parent::indexButtons()
-            ->prepend(
-                ActionButton::make('')->icon('s.arrow-uturn-right')
-                    ->customAttributes(['title' => __('moon-launch::ui.soft_deletes.force_delete')])
-                    ->method('forceDelete', events: [$this->getListEventName()])
-                    ->canSee(fn ($model) => $model->trashed())
-                    ->withConfirm(__('moon-launch::ui.soft_deletes.force_delete')),
-
-                ActionButton::make('')->icon('s.arrow-uturn-left')
-                    ->customAttributes(['title' => __('moon-launch::ui.soft_deletes.restore')])
-                    ->method('restore', events: [$this->getListEventName()])
-                    ->canSee(fn ($model) => $model->trashed())
-                    ->withConfirm(__('moon-launch::ui.soft_deletes.restore')),
-            );
+        return [
+            ActionButton::make('')->icon('s.arrow-uturn-right')
+                ->customAttributes(['title' => __('moon-launch::ui.soft_deletes.force_delete')])
+                ->method('forceDelete', events: [$this->getListEventName()])
+                ->canSee(fn ($model) => $model->trashed())
+                ->withConfirm(__('moon-launch::ui.soft_deletes.force_delete')),
+            ActionButton::make('')->icon('s.arrow-uturn-left')
+                ->customAttributes(['title' => __('moon-launch::ui.soft_deletes.restore')])
+                ->method('restore', events: [$this->getListEventName()])
+                ->canSee(fn ($model) => $model->trashed())
+                ->withConfirm(__('moon-launch::ui.soft_deletes.restore')),
+        ];
     }
 
     /**
-     * queryTags
+     * trashedTag
      */
-    protected function queryTags(): array
+    protected function trashedTag(): array
     {
         return [
             QueryTag::make(
@@ -45,6 +43,24 @@ trait WithSoftDeletes
                 static fn (Builder $q) => $q->onlyTrashed()
             ),
         ];
+    }
+
+    #[AsyncMethod]
+    /**
+     * restore
+     *
+     * @param  mixed  $request
+     */
+    public function restore(CrudRequestContract $request): JsonResponse
+    {
+        $item = $request->getResource()->getItem();
+        $item->restore();
+
+        return JsonResponse::make()
+            ->toast(
+                __('moon-launch::ui.soft_deletes.item_restored'),
+                ToastType::SUCCESS
+            );
     }
 
     /**
@@ -57,34 +73,18 @@ trait WithSoftDeletes
         return $builder->withTrashed();
     }
 
-    /**
-     * restore
-     *
-     * @param  mixed  $request
-     */
-    public function restore(MoonShineRequest $request): MoonShineJsonResponse
-    {
-        $item = $request->getResource()->getItem();
-        $item->restore();
-
-        return MoonShineJsonResponse::make()
-            ->toast(
-                __('moon-launch::ui.soft_deletes.item_restored'),
-                ToastType::SUCCESS
-            );
-    }
-
+    #[AsyncMethod]
     /**
      * forceDelete
      *
      * @param  mixed  $request
      */
-    public function forceDelete(MoonShineRequest $request): MoonShineJsonResponse
+    public function forceDelete(CrudRequestContract $request): JsonResponse
     {
         $item = $request->getResource()->getItem();
         $item->forceDelete();
 
-        return MoonShineJsonResponse::make()
+        return JsonResponse::make()
             ->toast(
                 __('moon-launch::ui.soft_deletes.item_deleted'),
                 ToastType::SUCCESS
@@ -97,6 +97,26 @@ trait WithSoftDeletes
      * @param  mixed  $button
      */
     protected function modifyDeleteButton(ActionButtonContract $button): ActionButtonContract
+    {
+        return $button->canSee(fn ($model) => ! $model->trashed());
+    }
+
+    /**
+     * modifyEditButton
+     *
+     * @param  mixed  $button
+     */
+    protected function modifyEditButton(ActionButtonContract $button): ActionButtonContract
+    {
+        return $button->canSee(fn ($model) => ! $model->trashed());
+    }
+
+    /**
+     * modifyDetailButton
+     *
+     * @param  mixed  $button
+     */
+    protected function modifyDetailButton(ActionButtonContract $button): ActionButtonContract
     {
         return $button->canSee(fn ($model) => ! $model->trashed());
     }

@@ -16,15 +16,15 @@
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.9",
         "modules/moon-launch": "*",
-        "moonshine/moonshine": "^3.4",
-        "sweet1s/moonshine-roles-permissions": "^3.0"
+        "moonshine/moonshine": "4.0.9",
+        "sweet1s/moonshine-roles-permissions": "^4.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
         "laravel-shift/blueprint": "^2.11",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",
-        "laravel/sail": "^1.44",
+        "laravel/sail": "^1.48",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.1",
         "pestphp/pest": "^3.7",

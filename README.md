@@ -2,13 +2,15 @@
 
 **Orion** is a modular starter project that speeds up the development of admin panels in Laravel using [MoonShine](https://moonshine-laravel.com/) as the admin framework.
 
+![Screenshot](./_docs/image.png)
+
 ## 📦 Main Technologies
 
 | Package                     | Version | Description                  |
 | --------------------------- | ------- | ---------------------------- |
 | Laravel                     | v12     | Core PHP framework           |
-| MoonShine                   | v3      | Admin panel                  |
-| moonshine-roles-permissions | v3      | Roles and permissions system |
+| MoonShine                   | v4      | Admin panel                  |
+| moonshine-roles-permissions | v4      | Roles and permissions system |
 | internachi/modular          | v2      | Modular architecture         |
 
 ## ✨ Key Features
@@ -19,6 +21,7 @@
 -   Ready-to-use modular architecture
 -   WithProperties - Trait for applying chainable properties to resources  
 -   WithSoftDeletes - Trait for implementing soft deletes to resources
+-   WithTrashedQuery - Trait for implementing query with trashed resources
 
 ### 🔐 Security
 
@@ -29,16 +32,7 @@ Permissions are automatically generated using the [`LaunchPermissions`](app-modu
 
 ### 🎨 Interface
 
--   4 pre-installed visual themes
 -   Support for both English and Spanish
-
-## 🖼 Theme Preview
-
-| Theme 1                           | Theme 2                           | Theme 3                           | Theme 4                           |
-| --------------------------------- | --------------------------------- | --------------------------------- | --------------------------------- |
-| ![Theme 1](./_docs/themes/1.webp) | ![Theme 2](./_docs/themes/2.webp) | ![Theme 3](./_docs/themes/3.webp) | ![Theme 4](./_docs/themes/4.webp) |
-
-Themes can be switched in the [`MoonlaunchServiceProvider`](app-modules/moon-launch/src/Providers/MoonLaunchServiceProvider.php)
 
 
 ## 🚀 Installation
