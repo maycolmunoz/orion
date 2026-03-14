@@ -1,5 +1,7 @@
 <?php
 
+use App\MoonShine\Layouts\MoonShineLayout;
+use App\MoonShine\Pages\Dashboard;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -7,6 +9,8 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Modules\MoonLaunch\Models\User;
+use MoonShine\ColorManager\Palettes\CyanPalette;
 use MoonShine\Crud\Forms\FiltersForm;
 use MoonShine\Crud\Forms\LoginForm;
 use MoonShine\Laravel\Exceptions\MoonShineNotFoundException;
@@ -57,7 +61,7 @@ return [
     'auth' => [
         'enabled' => true,
         'guard' => 'moonshine',
-        'model' => \Modules\MoonLaunch\Models\User::class,
+        'model' => User::class,
         'middleware' => Authenticate::class,
         'pipelines' => [],
     ],
@@ -71,10 +75,10 @@ return [
     ],
 
     // Layout, pages, forms
-    'layout' => App\MoonShine\Layouts\MoonShineLayout::class,
+    'layout' => MoonShineLayout::class,
 
     // global color palette
-    'palette' => \MoonShine\ColorManager\Palettes\CyanPalette::class,
+    'palette' => CyanPalette::class,
 
     'forms' => [
         'login' => LoginForm::class,
@@ -82,7 +86,7 @@ return [
     ],
 
     'pages' => [
-        'dashboard' => App\MoonShine\Pages\Dashboard::class,
+        'dashboard' => Dashboard::class,
         'profile' => ProfilePage::class,
         'login' => LoginPage::class,
         'error' => ErrorPage::class,
