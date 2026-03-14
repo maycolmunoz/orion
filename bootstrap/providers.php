@@ -1,6 +1,9 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use App\Providers\MoonShineServiceProvider;
+
 return [
-    App\Providers\AppServiceProvider::class,
-    App\Providers\MoonShineServiceProvider::class,
+    AppServiceProvider::class,
+    MoonShineServiceProvider::class,
 ];
