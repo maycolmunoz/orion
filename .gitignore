@@ -21,3 +21,9 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+GEMINI.md
+opencode.json
+boost.json
+AGENTS.md
+.agents/
+.gemini/
