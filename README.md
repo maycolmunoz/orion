@@ -56,12 +56,18 @@ Permissions are automatically generated using the [`LaunchPermissions`](app-modu
     php artisan launch:install
     ```
 
-The installer will automatically:
+    The installer will automatically:
+    -   Generate the application key
+    -   Run database migrations
+    -   Create permissions and the superadmin role
+    -   Create the initial user
 
--   Generate the application key
--   Run database migrations
--   Create permissions and the superadmin role
--   Create the initial user
+4. Set up Laravel Boost:
+    ```bash
+    php artisan boost:install
+    ```
+
+    The installer will auto-detect your IDE and generate the appropriate configuration files and agent guidelines.
 
 ---
 
