@@ -12,6 +12,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "guzzlehttp/guzzle": "^7.15.1",
         "internachi/modular": "^2.3",
         "laravel/framework": "^12.60.0",
         "laravel/tinker": "^2.9",
