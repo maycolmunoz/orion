@@ -19,9 +19,7 @@
         "sweet1s/moonshine-roles-permissions": "^4.0"
     },
     "require-dev": {
-        "composer/composer": "^2.9.6",
         "fakerphp/faker": "^1.23",
-        "laravel-shift/blueprint": "^2.11",
         "laravel/boost": "^2.4",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",
