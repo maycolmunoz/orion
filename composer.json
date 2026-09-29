@@ -12,10 +12,9 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "guzzlehttp/guzzle": "^7.15.2",
         "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0",
-        "moonshine/moonshine": "4.18.1",
+        "moonshine/moonshine": "4.19.4",
         "sweet1s/moonshine-roles-permissions": "^4.0"
     },
     "require-dev": {
@@ -24,7 +23,6 @@
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.65",
-        "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.1",
         "pestphp/pest": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0"
