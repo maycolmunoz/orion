@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "maycolmunoz/orion",
     "type": "project",
-    "description": "Starter kit for moonshine with modular support.",
+    "description": "Starter kit for moonshine.",
     "keywords": [
         "orion",
         "laravel",

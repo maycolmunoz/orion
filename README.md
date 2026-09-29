@@ -1,6 +1,6 @@
 # Orion: Starter Kit for Laravel MoonShine 🚀
 
-**Orion** is a modular starter project that speeds up the development of admin panels in Laravel using [MoonShine](https://moonshine-laravel.com/) as the admin framework.
+**Orion** is a starter project that speeds up the development of admin panels in Laravel using [MoonShine](https://moonshine-laravel.com/) as the admin framework.
 
 ![Screenshot](./_docs/image.png)
 
@@ -18,7 +18,6 @@
 ### 🛠 Base Configuration
 
 -   Fully pre-configured MoonShine
--   Ready-to-use modular architecture
 -   WithProperties - Trait for applying chainable properties to resources  
 -   WithSoftDeletes - Trait for implementing soft deletes to resources
 -   WithTrashedQuery - Trait for implementing query with trashed resources
@@ -28,7 +27,7 @@
 -   Integrated RBAC (Roles and Permissions) system
 -   Command for automatic permission generation
 
-Permissions are automatically generated using the [`LaunchPermissions`](modules/MoonLaunch/Console/Commands/LaunchPermissions.php) command. This command scans the **registered MoonShine resources** and creates the necessary permissions automatically.
+Permissions are automatically generated using the `launch:permissions` command (see [`LaunchPermissions`](modules/MoonLaunch/Console/Commands/LaunchPermissions.php)). This command scans the **registered MoonShine resources**, creates the necessary permissions, and finishes by creating a **Super Admin** role holding all of them.
 
 ### 🎨 Interface
 
@@ -49,6 +48,8 @@ Permissions are automatically generated using the [`LaunchPermissions`](modules/
     ```bash
     cp .env.example .env
     composer install
+    npm install
+    npm run build
     ```
 
 3. Run the installer:
