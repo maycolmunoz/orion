@@ -8,7 +8,7 @@
 
 | Package                     | Version | Description                  |
 | --------------------------- | ------- | ---------------------------- |
-| PHP                         | ^8.3    | Runtime                      |
+| PHP                         | ^8.4.1  | Runtime                      |
 | Laravel                     | v13     | Core PHP framework           |
 | MoonShine                   | v4      | Admin panel                  |
 | moonshine-roles-permissions | v4      | Roles and permissions system |
