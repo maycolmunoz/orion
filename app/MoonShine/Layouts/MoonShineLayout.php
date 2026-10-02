@@ -33,7 +33,7 @@ final class MoonShineLayout extends AppLayout
     {
         return Footer::make()
             ->copyright(
-                fn (): string => (string) config('app.name')
+                fn (): string => moonshineConfig()->getTitle()
             )
             ->menu($this->getFooterMenu());
     }
@@ -45,6 +45,11 @@ final class MoonShineLayout extends AppLayout
 
     public function build(): Layout
     {
+        $isTopBar = moonshineConfig()->get('layout_mode', 'sidebar') === 'topbar';
+
+        $this->topBar = $isTopBar;
+        $this->sidebar = ! $isTopBar;
+
         return parent::build();
     }
 }
