@@ -35,11 +35,6 @@ trait WithProperties
         return $this->set('with', $with);
     }
 
-    protected function withPolicy(): static
-    {
-        return $this->set('withPolicy', true);
-    }
-
     protected function column(string $column): static
     {
         return $this->set('column', $column);

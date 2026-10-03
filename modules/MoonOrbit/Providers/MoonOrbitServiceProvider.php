@@ -6,8 +6,12 @@ namespace Modules\MoonOrbit\Providers;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
+use Modules\MoonLaunch\Models\Role;
+use Modules\MoonLaunch\Models\User;
 use Modules\MoonOrbit\Models\Setting;
 use Modules\MoonOrbit\MoonShine\Pages\SettingsPage;
+use Modules\MoonOrbit\MoonShine\Resources\ActivityLog\ActivityLogResource;
+use Modules\MoonOrbit\Observers\ActivityObserver;
 use MoonShine\Contracts\Core\DependencyInjection\ConfiguratorContract;
 use MoonShine\Contracts\Core\DependencyInjection\CoreContract;
 use MoonShine\Contracts\MenuManager\MenuManagerContract;
@@ -31,12 +35,23 @@ class MoonOrbitServiceProvider extends ServiceProvider
             SettingsPage::class,
         ]);
 
+        User::observe(ActivityObserver::class);
+        Role::observe(ActivityObserver::class);
+        Setting::observe(ActivityObserver::class);
+
+        $core->resources([
+            ActivityLogResource::class,
+        ]);
+
         $menu->add(MenuRBAC::menu(
             MenuGroup::make('orbit', [
                 MenuItem::make(SettingsPage::class, 'settings.title')
                     ->icon('s.cog-6-tooth')
                     ->translatable('moon-orbit::ui')
                     ->canSee(self::canAccess(...)),
+                MenuItem::make(ActivityLogResource::class, 'activity_log.title')
+                    ->icon('s.clock')
+                    ->translatable('moon-orbit::ui'),
             ])
                 ->icon('m.moon')
                 ->translatable('moon-orbit::ui'),

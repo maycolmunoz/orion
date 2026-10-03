@@ -1,6 +1,7 @@
 ---
 paths:
   - 'modules/**/MoonShine/Pages/*.php'
+  - 'modules/**/MoonShine/Pages/**'
 ---
 
 # Pages
@@ -19,3 +20,6 @@ Hacer `Setting::put([...$data, ...])` sobre el resultado de `$request->validate(
 
 ## Anidar campos en Box/Grid/Column/Tabs es seguro: el fill es recursivo
 FormBuilder::prepareFields() usa Fields::fill() → onlyFields() con extractFields(), que baja recursivamente por HasFieldsContract y HasComponentsContract y llena los campos hoja EN SITIO. Por eso envolver campos en Box/Grid/Column/Flex/Tabs mantiene el fill de valores (y prepareAttributes) sin ajustes. Verificado: test 'lets a super admin open the settings page' siembra app_name y asserta value="Orion" dentro de Box→Grid→Column.
+
+## Field::getData() es DataWrapper, no el modelo
+En `changePreview(fn ($value, Field $field) => ...)` el segundo argumento NO es el modelo: `$field->getData()` devuelve un `ModelDataWrapper` (o escalar en form pages). Para helpers tipados usar `$field->getData()?->getOriginal()`, que sí devuelve el Model. El wrapper reenvía `__get` (`$field->getData()?->subject_type` funciona), pero pasarlo a un parámetro tipado `?ActivityLog` revienta con TypeError.

@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Modules\MoonLaunch\Models\User;
 use Modules\MoonOrbit\Models\Setting;
 use MoonShine\ColorManager\Palettes\CyanPalette;
-use Spatie\Permission\Models\Role;
 use Tests\TestCase;
+
+require_once __DIR__.'/helpers.php';
 
 /*
  * Este archivo vive fuera de tests/, así que tests/Pest.php no lo alcanza:
@@ -215,21 +213,3 @@ it('never persists the hidden_logo form helper as a setting', function () {
     expect(Setting::values())->not->toHaveKey('hidden_logo')
         ->and(Setting::query()->where('key', 'hidden_logo')->exists())->toBeFalse();
 });
-
-function loginAsAdmin(): void
-{
-    Role::findOrCreate('Super Admin', 'moonshine');
-
-    Auth::guard('moonshine')->setUser(User::create([
-        'name' => 'Admin',
-        'email' => fake()->unique()->safeEmail(),
-        'password' => Hash::make('password'),
-    ]));
-}
-
-function loginAsSuperAdmin(): void
-{
-    loginAsAdmin();
-
-    Auth::guard('moonshine')->user()->assignRole('Super Admin');
-}

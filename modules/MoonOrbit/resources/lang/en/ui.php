@@ -2,6 +2,28 @@
 
 return [
     'orbit' => 'Orbit',
+    'activity_log' => [
+        'title' => 'Activity log',
+        'user_id' => 'User',
+        'user_name' => 'User',
+        'event' => 'Action',
+        'subject_type' => 'Model',
+        'models' => [
+            'User' => 'User',
+            'Role' => 'Role',
+            'Setting' => 'Setting',
+        ],
+        'changes' => 'Changes',
+        'created_at' => 'Date',
+        'system' => 'System',
+        'events' => [
+            'created' => 'Created',
+            'updated' => 'Updated',
+            'deleted' => 'Deleted',
+            'forceDeleted' => 'Deleted permanently',
+            'restored' => 'Restored',
+        ],
+    ],
     'settings' => [
         'title' => 'Settings',
         'branding' => 'Branding',
