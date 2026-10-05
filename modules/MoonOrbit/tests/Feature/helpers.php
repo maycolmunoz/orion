@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Modules\MoonLaunch\Models\Role;
 use Modules\MoonLaunch\Models\User;
 use Modules\MoonOrbit\Models\Media;
+use Tests\TestCase;
 
-function loginAsAdmin(): User
+function loginAsUser(TestCase $test): User
 {
     Role::query()
         ->where('name', 'Super Admin')
@@ -24,17 +23,17 @@ function loginAsAdmin(): User
     $user = User::create([
         'name' => 'Admin',
         'email' => fake()->unique()->safeEmail(),
-        'password' => Hash::make('password'),
+        'password' => 'password',
     ]);
 
-    Auth::guard('moonshine')->setUser($user);
+    $test->be($user, 'moonshine');
 
     return $user;
 }
 
-function loginAsSuperAdmin(): User
+function loginAsSuperAdmin(TestCase $test): User
 {
-    $user = loginAsAdmin();
+    $user = loginAsUser($test);
 
     $user->assignRole('Super Admin');
 

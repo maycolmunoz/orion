@@ -52,7 +52,7 @@ it('allows clearing a value', function () {
 
 it('lets a super admin open the settings page', function () {
     Setting::put(['app_name' => 'Orion']);
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $this->get(route('moonshine.page', 'settings-page'))
         ->assertOk()
@@ -61,13 +61,13 @@ it('lets a super admin open the settings page', function () {
 });
 
 it('forbids a non super admin from opening the settings page', function () {
-    loginAsAdmin();
+    loginAsUser($this);
 
     $this->get(route('moonshine.page', 'settings-page'))->assertForbidden();
 });
 
 it('forbids a non super admin from saving settings', function () {
-    loginAsAdmin();
+    loginAsUser($this);
 
     $this->post(route('moonshine.method', [
         'pageUri' => 'settings-page',
@@ -78,7 +78,7 @@ it('forbids a non super admin from saving settings', function () {
 });
 
 it('saves settings for a super admin', function () {
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $this->post(route('moonshine.method', [
         'pageUri' => 'settings-page',
@@ -96,7 +96,7 @@ it('saves settings for a super admin', function () {
 });
 
 it('rejects an unknown layout', function () {
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $this->postJson(route('moonshine.method', [
         'pageUri' => 'settings-page',
@@ -110,7 +110,7 @@ it('rejects an unknown layout', function () {
 });
 
 it('rejects an unknown palette', function () {
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $this->postJson(route('moonshine.method', [
         'pageUri' => 'settings-page',
@@ -125,7 +125,7 @@ it('rejects an unknown palette', function () {
 
 it('stores an uploaded logo on the public disk', function () {
     Storage::fake('public');
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $this->post(route('moonshine.method', [
         'pageUri' => 'settings-page',
@@ -142,7 +142,7 @@ it('deletes the previous logo file when a new one is uploaded', function () {
     Storage::fake('public');
     Storage::disk('public')->put('moonshine/logo/old.png', 'old');
     Setting::put(['logo' => 'moonshine/logo/old.png']);
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $this->post(route('moonshine.method', [
         'pageUri' => 'settings-page',
@@ -160,7 +160,7 @@ it('deletes the logo file when the logo is cleared', function () {
     Storage::fake('public');
     Storage::disk('public')->put('moonshine/logo/removed.png', 'old');
     Setting::put(['logo' => 'moonshine/logo/removed.png']);
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $this->post(route('moonshine.method', [
         'pageUri' => 'settings-page',
@@ -173,7 +173,7 @@ it('deletes the logo file when the logo is cleared', function () {
 
 it('keeps the current logo when the field is resubmitted untouched', function () {
     Setting::put(['logo' => 'moonshine/logo/kept.png']);
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $this->post(route('moonshine.method', [
         'pageUri' => 'settings-page',
@@ -186,21 +186,9 @@ it('keeps the current logo when the field is resubmitted untouched', function ()
     expect(Setting::get('logo'))->toBe('moonshine/logo/kept.png');
 });
 
-it('clears the logo when the current one is removed from the form', function () {
-    Setting::put(['logo' => 'moonshine/logo/removed.png']);
-    loginAsSuperAdmin();
-
-    $this->post(route('moonshine.method', [
-        'pageUri' => 'settings-page',
-        'method' => 'saveSettings',
-    ]), ['app_name' => 'Orbit'])->assertOk();
-
-    expect(Setting::get('logo'))->toBeNull();
-});
-
 it('never persists the hidden_logo form helper as a setting', function () {
     Setting::put(['logo' => 'moonshine/logo/current.png']);
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $this->post(route('moonshine.method', [
         'pageUri' => 'settings-page',

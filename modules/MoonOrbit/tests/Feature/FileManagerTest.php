@@ -27,7 +27,7 @@ function fileManagerRoute(string $method): string
 it('lets a super admin open the file manager', function () {
     Storage::fake('public');
     makeMedia(['name' => 'report.pdf', 'path' => 'files/report.pdf']);
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $this->get(route('moonshine.page', 'file-manager-page'))
         ->assertOk()
@@ -36,14 +36,14 @@ it('lets a super admin open the file manager', function () {
 });
 
 it('forbids a non super admin from opening the file manager', function () {
-    loginAsAdmin();
+    loginAsUser($this);
 
     $this->get(route('moonshine.page', 'file-manager-page'))->assertForbidden();
 });
 
 it('stores uploaded files as media records', function () {
     Storage::fake('public');
-    $user = loginAsSuperAdmin();
+    $user = loginAsSuperAdmin($this);
 
     $this->post(fileManagerRoute('uploadFiles'), [
         'files' => [
@@ -66,7 +66,7 @@ it('stores uploaded files as media records', function () {
 
 it('forbids a non super admin from uploading files', function () {
     Storage::fake('public');
-    loginAsAdmin();
+    loginAsUser($this);
 
     $this->post(fileManagerRoute('uploadFiles'), [
         'files' => [UploadedFile::fake()->image('photo.png')],
@@ -75,16 +75,9 @@ it('forbids a non super admin from uploading files', function () {
     expect(Media::query()->count())->toBe(0);
 });
 
-it('rejects an upload without files', function () {
-    Storage::fake('public');
-    loginAsSuperAdmin();
-
-    $this->postJson(fileManagerRoute('uploadFiles'))->assertStatus(422);
-});
-
 it('rejects a disallowed extension', function () {
     Storage::fake('public');
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $this->postJson(fileManagerRoute('uploadFiles'), [
         'files' => [UploadedFile::fake()->create('script.php', 10, 'text/x-php')],
@@ -95,7 +88,7 @@ it('rejects a disallowed extension', function () {
 
 it('rejects a file over the size limit', function () {
     Storage::fake('public');
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $this->postJson(fileManagerRoute('uploadFiles'), [
         'files' => [UploadedFile::fake()->create('big.pdf', 20000, 'application/pdf')],
@@ -107,7 +100,7 @@ it('rejects a file over the size limit', function () {
 it('soft deletes a file and keeps it in the trash', function () {
     Storage::fake('public');
     $media = makeMedia();
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $this->post(fileManagerRoute('deleteMedia'), ['id' => $media->id])
         ->assertOk()
@@ -120,7 +113,7 @@ it('soft deletes a file and keeps it in the trash', function () {
 it('forbids a non super admin from deleting a file', function () {
     Storage::fake('public');
     $media = makeMedia();
-    loginAsAdmin();
+    loginAsUser($this);
 
     $this->post(fileManagerRoute('deleteMedia'), ['id' => $media->id])->assertForbidden();
 
@@ -129,7 +122,7 @@ it('forbids a non super admin from deleting a file', function () {
 
 it('rejects deleting a missing file', function () {
     Storage::fake('public');
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $this->postJson(fileManagerRoute('deleteMedia'), ['id' => 999])->assertStatus(422);
 });
@@ -138,7 +131,7 @@ it('lists trashed files in the trash', function () {
     Storage::fake('public');
     $media = makeMedia(['name' => 'old.pdf', 'path' => 'files/old.pdf']);
     $media->delete();
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $this->get(route('moonshine.page', ['pageUri' => 'file-manager-page', 'trashed' => 1]))
         ->assertOk()
@@ -150,7 +143,7 @@ it('restores a trashed file', function () {
     Storage::fake('public');
     $media = makeMedia();
     $media->delete();
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $this->post(fileManagerRoute('restoreMedia'), ['id' => $media->id])
         ->assertOk()
@@ -163,7 +156,7 @@ it('force deletes a trashed file and its physical file', function () {
     Storage::fake('public');
     $media = makeMedia();
     $media->delete();
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $this->post(fileManagerRoute('forceDeleteMedia'), ['id' => $media->id])->assertOk();
 

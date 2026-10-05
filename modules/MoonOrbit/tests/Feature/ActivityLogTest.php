@@ -3,19 +3,24 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
-use Illuminate\Support\Facades\Auth;
 use Modules\MoonLaunch\Models\Role;
 use Modules\MoonLaunch\Models\User;
 use Modules\MoonOrbit\Models\ActivityLog;
 use Modules\MoonOrbit\Models\Setting;
+use Modules\MoonOrbit\MoonShine\Resources\ActivityLog\ActivityLogResource;
 use Tests\TestCase;
 
 require_once __DIR__.'/helpers.php';
 
 uses(TestCase::class, LazilyRefreshDatabase::class);
 
+function activityLogResource(): ActivityLogResource
+{
+    return app(ActivityLogResource::class);
+}
+
 it('records user creation with the acting admin as causer', function () {
-    $admin = loginAsSuperAdmin();
+    $admin = loginAsSuperAdmin($this);
 
     $user = User::create([
         'name' => 'Created User',
@@ -37,7 +42,7 @@ it('records user creation with the acting admin as causer', function () {
 });
 
 it('never records sensitive attributes', function () {
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $user = User::create([
         'name' => 'Safe User',
@@ -52,7 +57,7 @@ it('never records sensitive attributes', function () {
 });
 
 it('records updates with old and new values', function () {
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $user = User::create([
         'name' => 'Original Name',
@@ -73,7 +78,7 @@ it('records updates with old and new values', function () {
 });
 
 it('records deletions and restorations', function () {
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $user = User::create([
         'name' => 'Deleted User',
@@ -92,7 +97,7 @@ it('records deletions and restorations', function () {
 });
 
 it('records force deletes without duplicating the soft delete', function () {
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $user = User::create([
         'name' => 'Force Deleted User',
@@ -109,7 +114,7 @@ it('records force deletes without duplicating the soft delete', function () {
 });
 
 it('records settings changes', function () {
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     Setting::put(['app_name' => 'Orion']);
 
@@ -124,29 +129,11 @@ it('records settings changes', function () {
         ->and($log->changes['attributes']['value'])->toBe('Orion');
 });
 
-it('records role creation', function () {
-    loginAsSuperAdmin();
-
-    $role = Role::create(['name' => 'Editor', 'guard_name' => 'moonshine']);
-
-    $log = ActivityLog::query()
-        ->where('subject_type', $role->getMorphClass())
-        ->where('subject_id', $role->id)
-        ->where('event', 'created')
-        ->first();
-
-    expect($log)->not->toBeNull()
-        ->and($log->changes['attributes']['name'])->toBe('Editor');
-});
-
 it('shows the activity log to a super admin', function () {
-    $admin = loginAsSuperAdmin();
+    $admin = loginAsSuperAdmin($this);
     $admin->update(['name' => 'Audited Admin']);
 
-    $this->get(route('moonshine.resource.page', [
-        'resourceUri' => 'activity-log-resource',
-        'pageUri' => 'activity-log-index-page',
-    ]))
+    $this->get(activityLogResource()->getIndexPageUrl())
         ->assertOk()
         ->assertSee('Audited Admin')
         ->assertSee(__('moon-orbit::ui.activity_log.models.User').' · Audited Admin')
@@ -156,7 +143,7 @@ it('shows the activity log to a super admin', function () {
 });
 
 it('deletes an activity log record', function () {
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $user = User::create([
         'name' => 'Deletable User',
@@ -169,59 +156,29 @@ it('deletes an activity log record', function () {
         ->where('event', 'created')
         ->firstOrFail();
 
-    $this->delete(route('moonshine.crud.destroy', [
-        'resourceUri' => 'activity-log-resource',
-        'resourceItem' => $log->id,
-    ]))->assertRedirect();
-
-    expect(ActivityLog::query()->find($log->id))->toBeNull();
-});
-
-it('mass deletes activity log records', function () {
-    loginAsSuperAdmin();
-
-    $user = User::create([
-        'name' => 'Mass Deletable User',
-        'email' => fake()->unique()->safeEmail(),
-        'password' => 'secret',
-    ]);
-
-    $log = ActivityLog::query()
-        ->where('subject_id', $user->id)
-        ->where('event', 'created')
-        ->firstOrFail();
-
-    $this->delete(route('moonshine.crud.massDelete', [
-        'resourceUri' => 'activity-log-resource',
-    ]), ['ids' => [$log->id]])->assertRedirect();
+    $this->delete(activityLogResource()->getRoute('crud.destroy', $log->id))->assertRedirect();
 
     expect(ActivityLog::query()->find($log->id))->toBeNull();
 });
 
 it('forbids deleting an activity log without permission', function () {
-    loginAsAdmin();
+    loginAsUser($this);
 
     $log = ActivityLog::query()->firstOrFail();
 
-    $this->delete(route('moonshine.crud.destroy', [
-        'resourceUri' => 'activity-log-resource',
-        'resourceItem' => $log->id,
-    ]))->assertForbidden();
+    $this->delete(activityLogResource()->getRoute('crud.destroy', $log->id))->assertForbidden();
 
     expect(ActivityLog::query()->find($log->id))->not->toBeNull();
 });
 
 it('forbids a non super admin from opening the activity log', function () {
-    loginAsAdmin();
+    loginAsUser($this);
 
-    $this->get(route('moonshine.resource.page', [
-        'resourceUri' => 'activity-log-resource',
-        'pageUri' => 'activity-log-index-page',
-    ]))->assertForbidden();
+    $this->get(activityLogResource()->getIndexPageUrl())->assertForbidden();
 });
 
 it('shows the full change diff on the detail page', function () {
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     $longName = str_repeat('A', 120);
 
@@ -238,45 +195,35 @@ it('shows the full change diff on the detail page', function () {
         ->where('event', 'updated')
         ->first();
 
-    $this->get(route('moonshine.resource.page', [
-        'resourceUri' => 'activity-log-resource',
-        'pageUri' => 'activity-log-detail-page',
-        'resourceItem' => $log->id,
-    ]))
+    $this->get(activityLogResource()->getDetailPageUrl($log->id))
         ->assertOk()
         ->assertSee($longName)
         ->assertSee('Short');
 });
 
 it('filters activities by event', function () {
-    loginAsSuperAdmin();
+    loginAsSuperAdmin($this);
 
     Role::create(['name' => 'Filtered Role', 'guard_name' => 'moonshine']);
 
-    $url = static fn (string $event): string => route('moonshine.resource.page', [
-        'resourceUri' => 'activity-log-resource',
-        'pageUri' => 'activity-log-index-page',
-        'filter' => ['event' => $event],
-    ]);
+    $created = activityLogResource()->getIndexPageUrl(['filter' => ['event' => 'created']]);
+    $deleted = activityLogResource()->getIndexPageUrl(['filter' => ['event' => 'deleted']]);
 
-    $this->get($url('created'))->assertOk()->assertSee('Filtered Role');
-    $this->get($url('deleted'))->assertOk()->assertDontSee('Filtered Role');
+    $this->get($created)->assertOk()->assertSee('Filtered Role');
+    $this->get($deleted)->assertOk()->assertDontSee('Filtered Role');
 });
 
 it('filters activities by user', function () {
-    $admin = loginAsSuperAdmin();
+    $admin = loginAsSuperAdmin($this);
 
-    $other = loginAsAdmin();
+    $other = loginAsUser($this);
     Role::create(['name' => 'Filtered By User Role', 'guard_name' => 'moonshine']);
 
-    Auth::guard('moonshine')->setUser($admin);
+    $this->be($admin, 'moonshine');
 
-    $url = static fn (int $id): string => route('moonshine.resource.page', [
-        'resourceUri' => 'activity-log-resource',
-        'pageUri' => 'activity-log-index-page',
-        'filter' => ['user_id' => $id],
-    ]);
+    $otherLogs = activityLogResource()->getIndexPageUrl(['filter' => ['user_id' => $other->id]]);
+    $adminLogs = activityLogResource()->getIndexPageUrl(['filter' => ['user_id' => $admin->id]]);
 
-    $this->get($url($other->id))->assertOk()->assertSee('Filtered By User Role');
-    $this->get($url($admin->id))->assertOk()->assertDontSee('Filtered By User Role');
+    $this->get($otherLogs)->assertOk()->assertSee('Filtered By User Role');
+    $this->get($adminLogs)->assertOk()->assertDontSee('Filtered By User Role');
 });

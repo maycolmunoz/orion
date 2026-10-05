@@ -3,21 +3,14 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
-use Illuminate\Support\Facades\Auth;
 use Modules\MoonLaunch\Models\Role;
 use Modules\MoonLaunch\Models\User;
+use Modules\MoonLaunch\MoonShine\Resources\Admin\AdminResource;
+use Modules\MoonLaunch\MoonShine\Resources\Role\RoleResource;
 use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
 uses(TestCase::class, LazilyRefreshDatabase::class);
-
-function adminIndexUrl(): string
-{
-    return route('moonshine.resource.page', [
-        'resourceUri' => 'admin-resource',
-        'pageUri' => 'admin-index-page',
-    ]);
-}
 
 it('allows super admins to manage users and roles', function () {
     $role = Role::query()
@@ -38,14 +31,10 @@ it('allows super admins to manage users and roles', function () {
 
     $user->assignRole($role);
 
-    Auth::guard('moonshine')->setUser($user);
+    $this->be($user, 'moonshine');
 
-    $this->get(adminIndexUrl())->assertOk();
-
-    $this->get(route('moonshine.resource.page', [
-        'resourceUri' => 'role-resource',
-        'pageUri' => 'role-index-page',
-    ]))->assertOk();
+    $this->get(app(AdminResource::class)->getIndexPageUrl())->assertOk();
+    $this->get(app(RoleResource::class)->getIndexPageUrl())->assertOk();
 });
 
 it('denies users without roles', function () {
@@ -55,9 +44,9 @@ it('denies users without roles', function () {
         'password' => 'password',
     ]);
 
-    Auth::guard('moonshine')->setUser($user);
+    $this->be($user, 'moonshine');
 
-    $this->get(adminIndexUrl())->assertForbidden();
+    $this->get(app(AdminResource::class)->getIndexPageUrl())->assertForbidden();
 });
 
 it('grants access to roles with the matching permission', function () {
@@ -74,12 +63,8 @@ it('grants access to roles with the matching permission', function () {
 
     $user->assignRole($role);
 
-    Auth::guard('moonshine')->setUser($user);
+    $this->be($user, 'moonshine');
 
-    $this->get(adminIndexUrl())->assertOk();
-
-    $this->get(route('moonshine.resource.page', [
-        'resourceUri' => 'role-resource',
-        'pageUri' => 'role-index-page',
-    ]))->assertForbidden();
+    $this->get(app(AdminResource::class)->getIndexPageUrl())->assertOk();
+    $this->get(app(RoleResource::class)->getIndexPageUrl())->assertForbidden();
 });
