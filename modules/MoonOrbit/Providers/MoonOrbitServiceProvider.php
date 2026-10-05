@@ -8,7 +8,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 use Modules\MoonLaunch\Models\Role;
 use Modules\MoonLaunch\Models\User;
+use Modules\MoonOrbit\Console\Commands\MediaSync;
+use Modules\MoonOrbit\Models\Media;
 use Modules\MoonOrbit\Models\Setting;
+use Modules\MoonOrbit\MoonShine\Pages\FileManagerPage;
 use Modules\MoonOrbit\MoonShine\Pages\SettingsPage;
 use Modules\MoonOrbit\MoonShine\Resources\ActivityLog\ActivityLogResource;
 use Modules\MoonOrbit\Observers\ActivityObserver;
@@ -33,11 +36,17 @@ class MoonOrbitServiceProvider extends ServiceProvider
 
         $core->pages([
             SettingsPage::class,
+            FileManagerPage::class,
         ]);
 
         User::observe(ActivityObserver::class);
         Role::observe(ActivityObserver::class);
         Setting::observe(ActivityObserver::class);
+        Media::observe(ActivityObserver::class);
+
+        $this->commands([
+            MediaSync::class,
+        ]);
 
         $core->resources([
             ActivityLogResource::class,
@@ -52,6 +61,10 @@ class MoonOrbitServiceProvider extends ServiceProvider
                 MenuItem::make(ActivityLogResource::class, 'activity_log.title')
                     ->icon('s.clock')
                     ->translatable('moon-orbit::ui'),
+                MenuItem::make(FileManagerPage::class, 'file_manager.title')
+                    ->icon('s.folder')
+                    ->translatable('moon-orbit::ui')
+                    ->canSee(self::canAccess(...)),
             ])
                 ->icon('m.moon')
                 ->translatable('moon-orbit::ui'),

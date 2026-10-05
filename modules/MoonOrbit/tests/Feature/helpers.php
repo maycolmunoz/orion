@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Modules\MoonLaunch\Models\Role;
 use Modules\MoonLaunch\Models\User;
+use Modules\MoonOrbit\Models\Media;
 
 function loginAsAdmin(): User
 {
@@ -37,4 +39,22 @@ function loginAsSuperAdmin(): User
     $user->assignRole('Super Admin');
 
     return $user;
+}
+
+/**
+ * @param  array<string, mixed>  $attributes
+ */
+function makeMedia(array $attributes = []): Media
+{
+    $media = Media::query()->create(array_merge([
+        'name' => 'report.pdf',
+        'disk' => 'public',
+        'path' => 'files/report.pdf',
+        'mime_type' => 'application/pdf',
+        'size' => 10,
+    ], $attributes));
+
+    Storage::disk($media->disk)->put($media->path, 'content');
+
+    return $media;
 }

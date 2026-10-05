@@ -62,6 +62,6 @@ final class ActivityObserver
      */
     private static function attributes(array $attributes): array
     {
-        return Arr::except($attributes, ['password', 'remember_token', 'updated_at']);
+        return Arr::except($attributes, ['password', 'remember_token', 'created_at', 'updated_at', 'deleted_at']);
     }
 }
