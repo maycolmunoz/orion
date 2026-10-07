@@ -16,6 +16,7 @@ return [
 
         'main_information' => 'Main Information',
         'change_password' => 'Change Password',
+        'super_admin_protected' => 'The Super Admin role cannot be deleted',
     ],
 
     'soft_deletes' => [
@@ -24,6 +25,7 @@ return [
         'force_delete' => 'Delete permanently',
         'item_deleted' => 'Item deleted',
         'item_restored' => 'Item restored',
+        'forbidden' => 'You do not have permission to manage deleted records',
     ],
 
     'dashboard' => [

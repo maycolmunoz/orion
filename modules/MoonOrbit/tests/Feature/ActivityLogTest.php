@@ -3,11 +3,13 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Modules\MoonLaunch\Models\Role;
 use Modules\MoonLaunch\Models\User;
 use Modules\MoonOrbit\Models\ActivityLog;
 use Modules\MoonOrbit\Models\Setting;
 use Modules\MoonOrbit\MoonShine\Resources\ActivityLog\ActivityLogResource;
+use MoonShine\Contracts\Core\DependencyInjection\RouterContract;
 use Tests\TestCase;
 
 require_once __DIR__.'/helpers.php';
@@ -17,6 +19,17 @@ uses(TestCase::class, LazilyRefreshDatabase::class);
 function activityLogResource(): ActivityLogResource
 {
     return app(ActivityLogResource::class);
+}
+
+function activityMethodUrl(string $method): string
+{
+    $resource = app(ActivityLogResource::class);
+
+    return app(RouterContract::class)->getEndpoints()->method(
+        method: $method,
+        page: $resource->getIndexPage(),
+        resource: $resource,
+    );
 }
 
 it('records user creation with the acting admin as causer', function () {
@@ -226,4 +239,59 @@ it('filters activities by user', function () {
 
     $this->get($otherLogs)->assertOk()->assertSee('Filtered By User Role');
     $this->get($adminLogs)->assertOk()->assertDontSee('Filtered By User Role');
+});
+
+it('prunes activity logs older than the retention window', function () {
+    loginAsSuperAdmin($this);
+
+    $user = User::create([
+        'name' => 'Pruned User',
+        'email' => fake()->unique()->safeEmail(),
+        'password' => 'secret',
+    ]);
+
+    ActivityLog::query()->update(['created_at' => now()->subDays(120)]);
+
+    expect(Artisan::call('orbit:activity:prune', ['--days' => 90]))->toBe(0);
+
+    expect(ActivityLog::query()->count())->toBe(0);
+
+    $user->delete();
+
+    expect(ActivityLog::query()->count())->toBe(1);
+
+    expect(Artisan::call('orbit:activity:prune'))->toBe(0)
+        ->and(ActivityLog::query()->count())->toBe(1);
+});
+
+it('clears the whole activity log via the clear button method', function () {
+    loginAsSuperAdmin($this);
+
+    User::create([
+        'name' => 'Clearable User',
+        'email' => fake()->unique()->safeEmail(),
+        'password' => 'secret',
+    ]);
+
+    expect(ActivityLog::query()->count())->toBeGreaterThan(0);
+
+    $this->post(activityMethodUrl('clearAll'))->assertOk();
+
+    expect(ActivityLog::query()->count())->toBe(0);
+});
+
+it('forbids clearing the activity log without permission', function () {
+    loginAsUser($this);
+
+    $this->post(activityMethodUrl('clearAll'))->assertForbidden();
+
+    expect(ActivityLog::query()->count())->not->toBe(0);
+});
+
+it('shows the clear button to a super admin', function () {
+    loginAsSuperAdmin($this);
+
+    $this->get(activityLogResource()->getIndexPageUrl())
+        ->assertOk()
+        ->assertSee(__('moon-orbit::ui.activity_log.clear_all'));
 });

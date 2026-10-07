@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Modules\MoonOrbit\MoonShine\Pages;
 
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Number;
 use Modules\MoonOrbit\Models\Media;
 use MoonShine\Contracts\UI\ComponentContract;
+use MoonShine\Crud\Components\Paginator;
 use MoonShine\Crud\JsonResponse;
 use MoonShine\Laravel\MoonShineAuth;
 use MoonShine\Laravel\Pages\Page;
@@ -89,7 +90,7 @@ class FileManagerPage extends Page
             $trashed ? __('moon-orbit::ui.file_manager.trash') : __('moon-orbit::ui.file_manager.files'),
             $media->isEmpty()
                 ? [Heading::make(__($trashed ? 'moon-orbit::ui.file_manager.trash_empty' : 'moon-orbit::ui.file_manager.empty'))]
-                : [$this->grid($media)],
+                : [$this->grid($media->items()), Paginator::make($media)],
         )->icon($trashed ? 's.trash' : 's.folder');
 
         $components[] = ActionButton::make(
@@ -101,9 +102,9 @@ class FileManagerPage extends Page
     }
 
     /**
-     * @param  Collection<int, Media>  $media
+     * @param  iterable<int, Media>  $media
      */
-    private function grid(Collection $media): CardsBuilder
+    private function grid(iterable $media): CardsBuilder
     {
         $trashed = request()->boolean('trashed');
 
@@ -146,17 +147,23 @@ class FileManagerPage extends Page
         }
 
         $request->validate([
-            'files' => ['required', 'array'],
+            'files' => ['required', 'array', 'max:10'],
             'files.*' => ['file', 'max:'.self::MAX_KB, 'mimes:'.implode(',', self::ALLOWED_EXTENSIONS)],
         ]);
 
         $uploader = MoonShineAuth::getGuard()->user()?->getKey();
 
         foreach ($request->file('files') as $file) {
+            $path = $file->store(Media::DIR, Media::DISK);
+
+            if ($path === false) {
+                continue;
+            }
+
             Media::query()->create([
                 'name' => $file->getClientOriginalName(),
                 'disk' => Media::DISK,
-                'path' => $file->store(Media::DIR, Media::DISK),
+                'path' => $path,
                 'mime_type' => $file->getClientMimeType(),
                 'size' => $file->getSize(),
                 'uploader_id' => $uploader,
@@ -222,14 +229,15 @@ class FileManagerPage extends Page
     }
 
     /**
-     * @return Collection<int, Media>
+     * @return LengthAwarePaginator<int, Media>
      */
-    private function media(bool $trashed): Collection
+    private function media(bool $trashed): LengthAwarePaginator
     {
         return Media::query()
             ->when($trashed, fn ($query) => $query->onlyTrashed())
             ->latest()
-            ->get();
+            ->paginate(24)
+            ->withQueryString();
     }
 
     private function pageUrl(bool $trashed): string

@@ -145,15 +145,15 @@ class SettingsPage extends Page
                 ->toast(__('moon-orbit::ui.settings.forbidden'), ToastType::ERROR);
         }
 
+        $previousLogo = Setting::get('logo');
+
         $data = $request->validate([
             'app_name' => ['required', 'string', 'max:255'],
             'logo' => ['nullable', 'image', 'max:4096'],
-            'hidden_logo' => ['nullable', 'string', 'max:255'],
+            'hidden_logo' => ['nullable', 'string', 'max:255', Rule::in(array_filter([$previousLogo]))],
             'palette' => ['nullable', 'string', Rule::in(array_keys(self::palettes()))],
             'layout' => ['nullable', 'string', Rule::in(array_keys(self::layouts()))],
         ]);
-
-        $previousLogo = Setting::get('logo');
 
         $logo = $request->hasFile('logo')
             ? $request->file('logo')->store(self::LOGO_DIR, 'public')

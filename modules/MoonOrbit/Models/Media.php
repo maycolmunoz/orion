@@ -17,7 +17,6 @@ use Modules\MoonLaunch\Models\User;
  * @property string $path
  * @property string|null $mime_type
  * @property int $size
- * @property string|null $alt
  * @property int|null $uploader_id
  */
 final class Media extends Model

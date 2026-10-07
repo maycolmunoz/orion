@@ -16,6 +16,7 @@ return [
 
         'main_information' => 'Información principal',
         'change_password' => 'Cambiar contraseña',
+        'super_admin_protected' => 'El rol de Super Admin no se puede eliminar',
     ],
 
     'soft_deletes' => [
@@ -24,6 +25,7 @@ return [
         'force_delete' => 'Eliminar permanentemente',
         'item_deleted' => 'Elemento eliminado',
         'item_restored' => 'Elemento restaurado',
+        'forbidden' => 'No tienes permiso para gestionar registros eliminados',
     ],
 
     'dashboard' => [

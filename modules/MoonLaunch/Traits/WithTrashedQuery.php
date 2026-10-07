@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\MoonLaunch\Traits;
 
 use Illuminate\Contracts\Database\Eloquent\Builder;

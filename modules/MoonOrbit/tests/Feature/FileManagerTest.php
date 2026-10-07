@@ -10,6 +10,14 @@ use Tests\TestCase;
 
 require_once __DIR__.'/helpers.php';
 
+final class StoringFailsFile extends UploadedFile
+{
+    public function store($path = '', $options = []): string|false
+    {
+        return false;
+    }
+}
+
 /*
  * Este archivo vive fuera de tests/, así que tests/Pest.php no lo alcanza:
  * el TestCase de la app hay que vincularlo aquí.
@@ -75,6 +83,20 @@ it('forbids a non super admin from uploading files', function () {
     expect(Media::query()->count())->toBe(0);
 });
 
+it('skips a file whose store fails instead of persisting an empty path', function () {
+    Storage::fake('public');
+    loginAsSuperAdmin($this);
+
+    $real = UploadedFile::fake()->image('broken.png');
+    $file = new StoringFailsFile($real->getRealPath(), 'broken.png', $real->getMimeType(), null, true);
+
+    $this->postJson(fileManagerRoute('uploadFiles'), [
+        'files' => [$file],
+    ])->assertOk();
+
+    expect(Media::query()->count())->toBe(0);
+});
+
 it('rejects a disallowed extension', function () {
     Storage::fake('public');
     loginAsSuperAdmin($this);
@@ -92,6 +114,19 @@ it('rejects a file over the size limit', function () {
 
     $this->postJson(fileManagerRoute('uploadFiles'), [
         'files' => [UploadedFile::fake()->create('big.pdf', 20000, 'application/pdf')],
+    ])->assertStatus(422);
+
+    expect(Media::query()->count())->toBe(0);
+});
+
+it('rejects more than ten files in a single upload', function () {
+    Storage::fake('public');
+    loginAsSuperAdmin($this);
+
+    $this->postJson(fileManagerRoute('uploadFiles'), [
+        'files' => collect(range(0, 10))
+            ->map(fn (int $i): UploadedFile => UploadedFile::fake()->image("photo-{$i}.png"))
+            ->all(),
     ])->assertStatus(422);
 
     expect(Media::query()->count())->toBe(0);
@@ -137,6 +172,28 @@ it('lists trashed files in the trash', function () {
         ->assertOk()
         ->assertSee(__('moon-orbit::ui.file_manager.trash'))
         ->assertSee('old.pdf');
+});
+
+it('paginates the media library', function () {
+    Storage::fake('public');
+    $time = now()->subDays(2);
+    makeMedia(['name' => 'first.pdf', 'path' => 'files/first.pdf', 'created_at' => $time]);
+
+    for ($i = 0; $i < 25; $i++) {
+        makeMedia(['name' => "file-{$i}.pdf", 'path' => "files/file-{$i}.pdf", 'created_at' => $time->addHour()]);
+    }
+
+    loginAsSuperAdmin($this);
+
+    $this->get(route('moonshine.page', 'file-manager-page'))
+        ->assertOk()
+        ->assertSee('file-24.pdf')
+        ->assertDontSee('first.pdf');
+
+    $this->get(route('moonshine.page', ['pageUri' => 'file-manager-page', 'page' => 2]))
+        ->assertOk()
+        ->assertSee('first.pdf')
+        ->assertDontSee('file-24.pdf');
 });
 
 it('restores a trashed file', function () {

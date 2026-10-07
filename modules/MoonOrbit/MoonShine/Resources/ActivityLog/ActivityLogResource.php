@@ -9,11 +9,16 @@ use Modules\MoonOrbit\Models\ActivityLog;
 use Modules\MoonOrbit\MoonShine\Resources\ActivityLog\Pages\ActivityLogDetailPage;
 use Modules\MoonOrbit\MoonShine\Resources\ActivityLog\Pages\ActivityLogIndexPage;
 use MoonShine\Contracts\Core\PageContract;
+use MoonShine\Crud\JsonResponse;
 use MoonShine\Laravel\Resources\ModelResource;
+use MoonShine\Support\Attributes\AsyncMethod;
 use MoonShine\Support\Attributes\Icon;
+use MoonShine\Support\Enums\Ability;
 use MoonShine\Support\Enums\Action;
+use MoonShine\Support\Enums\ToastType;
 use MoonShine\Support\ListOf;
 use Sweet1s\MoonshineRBAC\Traits\WithRolePermissions;
+use Symfony\Component\HttpFoundation\Response;
 
 #[Icon('s.clock')]
 /**
@@ -73,5 +78,21 @@ class ActivityLogResource extends ModelResource
         return collect([self::modelName($log->subject_type), e((string) $log->subject_label)])
             ->filter()
             ->implode(' · ') ?: '—';
+    }
+
+    #[AsyncMethod]
+    public function clearAll(): JsonResponse
+    {
+        if (! $this->can(Ability::MASS_DELETE)) {
+            return JsonResponse::make()
+                ->setStatusCode(Response::HTTP_FORBIDDEN)
+                ->toast(__('moon-orbit::ui.activity_log.forbidden'), ToastType::ERROR);
+        }
+
+        ActivityLog::query()->delete();
+
+        return JsonResponse::make()
+            ->redirect($this->getIndexPageUrl())
+            ->toast(__('moon-orbit::ui.activity_log.cleared'), ToastType::SUCCESS);
     }
 }

@@ -57,6 +57,38 @@ it('registers untracked disk files via media:sync, idempotently', function () {
         ->and(Media::query()->count())->toBe(2);
 });
 
+it('registers files in subdirectories via media:sync', function () {
+    Storage::fake('public');
+    Storage::disk('public')->put('files/publications/deep.pdf', 'content');
+
+    expect(Artisan::call('media:sync'))->toBe(0);
+
+    expect(Media::query()->pluck('path')->all())->toContain('files/publications/deep.pdf');
+});
+
+it('reports media rows whose file is missing on disk with --check', function () {
+    Storage::fake('public');
+    Media::query()->create([
+        'name' => 'gone.pdf',
+        'disk' => Media::DISK,
+        'path' => 'files/gone.pdf',
+    ]);
+
+    expect(Artisan::call('media:sync', ['--check' => true]))->toBe(1);
+
+    $output = Artisan::output();
+
+    expect($output)->toContain('gone.pdf');
+});
+
+it('passes --check when every media file exists on disk', function () {
+    Storage::fake('public');
+    makeMedia(['name' => 'here.pdf', 'path' => 'files/here.pdf']);
+    Storage::disk('public')->put('files/here.pdf', 'content');
+
+    expect(Artisan::call('media:sync', ['--check' => true]))->toBe(0);
+});
+
 it('records its lifecycle in the activity log', function () {
     Storage::fake('public');
     $subjectType = (new Media)->getMorphClass();

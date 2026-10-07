@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\MoonLaunch\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 class LaunchInstall extends Command
 {
@@ -23,10 +26,15 @@ class LaunchInstall extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $this->info('🔧 Generating application key...');
-        $this->call('key:generate');
+
+        if (! Str::is('base64:*', config('app.key'))) {
+            $this->call('key:generate');
+        } else {
+            $this->info('✅ Application key already generated, skipping.');
+        }
 
         $this->info('📦 Running migrations...');
         $this->call('migrate');
@@ -35,8 +43,15 @@ class LaunchInstall extends Command
         $this->call('launch:permissions');
 
         $this->info('👤 Creating Super Admin user...');
-        $this->call('moonshine-rbac:user');
+
+        if (! config('moonshine.auth.model')::where('role_id', 1)->exists()) {
+            $this->call('moonshine-rbac:user');
+        } else {
+            $this->info('✅ Super Admin user already exists, skipping.');
+        }
 
         $this->info('✅ MoonLaunch installed successfully.');
+
+        return self::SUCCESS;
     }
 }

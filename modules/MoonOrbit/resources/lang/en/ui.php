@@ -24,6 +24,10 @@ return [
             'forceDeleted' => 'Deleted permanently',
             'restored' => 'Restored',
         ],
+        'clear_all' => 'Clear log',
+        'clear_all_confirm' => 'Empty the entire activity log? This cannot be undone.',
+        'cleared' => 'Activity log emptied',
+        'forbidden' => 'You do not have permission to empty the activity log',
     ],
     'file_manager' => [
         'title' => 'File manager',

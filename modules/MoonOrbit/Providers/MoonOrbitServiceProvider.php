@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Modules\MoonOrbit\Providers;
 
+use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 use Modules\MoonLaunch\Models\Role;
 use Modules\MoonLaunch\Models\User;
 use Modules\MoonOrbit\Console\Commands\MediaSync;
+use Modules\MoonOrbit\Console\Commands\PruneActivityLog;
 use Modules\MoonOrbit\Models\Media;
 use Modules\MoonOrbit\Models\Setting;
 use Modules\MoonOrbit\MoonShine\Pages\FileManagerPage;
@@ -46,7 +48,10 @@ class MoonOrbitServiceProvider extends ServiceProvider
 
         $this->commands([
             MediaSync::class,
+            PruneActivityLog::class,
         ]);
+
+        Schedule::command('orbit:activity:prune')->daily();
 
         $core->resources([
             ActivityLogResource::class,

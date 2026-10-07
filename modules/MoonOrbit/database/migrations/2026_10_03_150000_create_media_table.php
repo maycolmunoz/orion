@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('path')->unique();
             $table->string('mime_type')->nullable();
             $table->unsignedBigInteger('size')->default(0);
-            $table->string('alt')->nullable();
             $table->foreignId('uploader_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();

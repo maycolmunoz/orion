@@ -201,3 +201,18 @@ it('never persists the hidden_logo form helper as a setting', function () {
     expect(Setting::values())->not->toHaveKey('hidden_logo')
         ->and(Setting::query()->where('key', 'hidden_logo')->exists())->toBeFalse();
 });
+
+it('rejects a hidden_logo that does not match the stored logo', function () {
+    Setting::put(['logo' => 'moonshine/logo/real.png']);
+    loginAsSuperAdmin($this);
+
+    $this->postJson(route('moonshine.method', [
+        'pageUri' => 'settings-page',
+        'method' => 'saveSettings',
+    ]), [
+        'app_name' => 'Orbit',
+        'hidden_logo' => '../../config/app.php',
+    ])->assertStatus(422);
+
+    expect(Setting::get('logo'))->toBe('moonshine/logo/real.png');
+});

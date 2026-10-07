@@ -24,6 +24,10 @@ return [
             'forceDeleted' => 'Eliminado permanentemente',
             'restored' => 'Restaurado',
         ],
+        'clear_all' => 'Limpiar registros',
+        'clear_all_confirm' => '¿Vaciar todo el registro de actividad? No se puede deshacer.',
+        'cleared' => 'Registro de actividad vaciado',
+        'forbidden' => 'No tienes permiso para vaciar el registro de actividad',
     ],
     'file_manager' => [
         'title' => 'Gestor de archivos',
