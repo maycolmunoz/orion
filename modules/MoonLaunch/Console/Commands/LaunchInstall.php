@@ -6,6 +6,7 @@ namespace Modules\MoonLaunch\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use Modules\MoonLaunch\Models\User;
 
 class LaunchInstall extends Command
 {
@@ -44,7 +45,7 @@ class LaunchInstall extends Command
 
         $this->info('👤 Creating Super Admin user...');
 
-        if (! config('moonshine.auth.model')::where('role_id', 1)->exists()) {
+        if (! config('moonshine.auth.model')::role(User::SUPER_ADMIN_ROLE_ID)->exists()) {
             $this->call('moonshine-rbac:user');
         } else {
             $this->info('✅ Super Admin user already exists, skipping.');
