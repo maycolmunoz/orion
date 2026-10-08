@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.1.0] - 2026-10-08
+
+MoonOrbit, an optional module shipped disabled by default. Requires PHP 8.4.1+.
+
+### Added
+
+-   MoonOrbit: optional module with its own provider, migrations and translations
+-   Settings page for branding and layout options
+-   Activity log for MoonLaunch models
+-   Media library backed by the database, with trash
+-   `media:sync` — recursive sync, `--check` to list rows whose file is missing
+-   `orbit:activity:prune --days=90`
+-   Upload limits: 10 MB, 13 extensions
+-   Testsuite `Modules` in `phpunit.xml`; module tests skip when the provider is disabled
+-   CI job running the test suite on MySQL 8.0
+
+### Fixed
+
+-   Super admin detected through the Spatie role instead of a nonexistent `role_id` column
+
+### Changed
+
+-   Root `README.md` is now only an entry point; each module ships a self-contained README
+-   `.ai/rules` consolidated from 19 files to 7, in English
+
 ## [1.0.0] - 2026-09-29
 
 First release. Requires PHP 8.4.1+.

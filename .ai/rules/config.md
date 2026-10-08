@@ -1,9 +1,9 @@
 ---
 paths:
-  - config/filesystems.php
+  - 'config/filesystems.php'
 ---
 
 # Config
 
-## Laravel 13: el disco `local` con serve=true secuestra /storage y devuelve 403
-El skeleton de Laravel 13 pone `'serve' => true` en el disco `local` (root storage/app/private, sin `url`), así que FilesystemServiceProvider le registra `GET /storage/{path}`. Como `local` no define `visibility`, ServeFile::hasValidSignature() lo trata como privado y devuelve **403 en local / 404 en producción**. El disco `public` NO tiene `serve`, así que `Storage::disk('public')->url()` produce una URL que solo funciona si existe el symlink `public/storage`. Diagnosticar: si `/storage/x.png` da 403 y `/nope.png` da 404, es esto. Fix: `php artisan storage:link` (crea el symlink, el router de `artisan serve` sirve el archivo antes de llegar a Laravel). NO usar `storage:link --relative` sin `symfony/filesystem` instalado.
+## Laravel 13's `local` disk hijacks `/storage` and returns 403
+The Laravel 13 skeleton sets `'serve' => true` on the `local` disk (root `storage/app/private`, no `url`), so `FilesystemServiceProvider` registers `GET /storage/{path}`. Because `local` defines no `visibility`, `ServeFile::hasValidSignature()` treats it as private and answers **403 locally / 404 in production**. The `public` disk has no `serve`, so `Storage::disk('public')->url()` only works when the `public/storage` symlink exists. Diagnose with the split: `/storage/x.png` → 403 while `/nope.png` → 404. Fix is `php artisan storage:link`. Do not use `storage:link --relative` without `symfony/filesystem` installed.

@@ -5,5 +5,13 @@ paths:
 
 # Modules
 
-## El código sin uso es punto de extensión, no código muerto
-Orion es un STARTER KIT: el código sin consumidor es superficie de extensión, NO código muerto. MediaField, los setters sin llamar de WithProperties, los overrides no-op de AdminIndexPage/RoleIndexPage/AdminFormPage, los ejemplos comentados (LaunchPermissions:35-37, Image::make('avatar') en AdminFormPage) y las claves de lang sin uso (resource.system/role/avatar) existen a propósito para quien use el kit. No proponer borrarlos ni quitar hooks "para limpiar"; solo se eliminan si el usuario lo pide explícitamente. Ajustar/rellenar uno de esos huecos es trabajo válido.
+Orion is a STARTER KIT: the code lives in modules, and any consumer of it may download a module folder and drop it into their own project.
+
+## Unused code is extension surface, not dead code
+`MediaField`, the uncalled `WithProperties` setters, the no-op overrides in `AdminIndexPage`/`RoleIndexPage`/`AdminFormPage`, the commented examples (`LaunchPermissions`, `Image::make('avatar')`) and unused lang keys (`resource.system`, `role`, `avatar`) exist on purpose for whoever uses the kit. Never propose deleting them or removing hooks to "clean up" — only if the user asks explicitly. Filling one of those gaps is valid work.
+
+## Every module migration lives inside the module
+`modules/<Module>/database/migrations/`, registered with `loadMigrationsFrom(__DIR__.'/../database/migrations')` in that module's provider. `database/migrations/` holds only skeleton tables (users, cache, jobs, permissions, notifications). Moving an already-applied migration is safe if the filename is kept — the `migrations` table records by name, not by path (that's how `create_activity_logs_table` moved from MoonLaunch to MoonOrbit without re-running).
+
+## Dependencies point one way: optional module → core module
+MoonOrbit observes `User`/`Role` from MoonLaunch via `User::observe()`/`Role::observe()` in `MoonOrbitServiceProvider::boot()`. MoonLaunch must never import anything from MoonOrbit, so MoonOrbit can stay conditional. The full activity log (`ActivityLog`, `ActivityObserver`, its migration, its resource) belongs to MoonOrbit; do not reintroduce a `LogsActivity` trait in MoonLaunch.

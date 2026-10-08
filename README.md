@@ -18,21 +18,22 @@
 ### 🛠 Base Configuration
 
 -   Fully pre-configured MoonShine
--   WithProperties - Trait for applying chainable properties to resources  
--   WithSoftDeletes - Trait for implementing soft deletes to resources
--   WithTrashedQuery - Trait for implementing query with trashed resources
 
 ### 🔐 Security
 
 -   Integrated RBAC (Roles and Permissions) system
 -   Command for automatic permission generation
 
-Permissions are automatically generated using the `launch:permissions` command (see [`LaunchPermissions`](modules/MoonLaunch/Console/Commands/LaunchPermissions.php)). This command scans the **registered MoonShine resources**, creates the necessary permissions, and finishes by creating a **Super Admin** role holding all of them.
-
 ### 🎨 Interface
 
 -   Support for both English and Spanish
 
+## 🧩 Modules
+
+Logic lives in the modules, and each one is self-contained: drop the folder in and read its README.
+
+-   **[MoonLaunch](./modules/MoonLaunch/README.md)** — core, not optional. Users, roles, permissions, dashboard, install commands and the resource traits.
+-   **[MoonOrbit](./modules/MoonOrbit/README.md)** — optional, ships disabled. Settings, file manager, media library and activity log.
 
 ## 🚀 Installation
 
@@ -57,11 +58,8 @@ Permissions are automatically generated using the `launch:permissions` command (
     php artisan launch:install
     ```
 
-    The installer will automatically:
-    -   Generate the application key
-    -   Run database migrations
-    -   Create permissions and the superadmin role
-    -   Create the initial user
+    Sets up the app key, migrations, permissions, the super admin role and the first user. See
+    [MoonLaunch](./modules/MoonLaunch/README.md) for the details and for how to re-run any step.
 
 4. Set up Laravel Boost:
     ```bash

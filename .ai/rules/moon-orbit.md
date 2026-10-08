@@ -3,25 +3,27 @@ paths:
   - 'modules/MoonOrbit/**'
 ---
 
-# Moon Orbit
+# MoonOrbit
 
-## Las migraciones de MoonOrbit viven en el módulo, no en database/migrations
-Las migraciones de MoonOrbit van en `modules/MoonOrbit/database/migrations/` y se registran con `$this->loadMigrationsFrom()` en MoonOrbitServiceProvider::boot(). Así `migrate` a secas sigue corriendo y más adelante la condicionalidad cabe en un `if` antes de esa línea. `loadMigrationsFrom` usa `callAfterResolving('migrator')`, no requiere ser la primera statement. Regla general: toda migración nueva de un módulo vive dentro de su módulo; `database/migrations` queda solo para las tablas del skeleton (users, cache, jobs, permissions, notifications).
+Optional module. Ships DISABLED — the provider is commented out in `bootstrap/providers.php`. Enabling it is uncommenting that line, not fixing a bug. See `tests.md` for the conditional test guard that keeps the suite green while it is off.
 
-## El activity log completo vive en MoonOrbit (MoonLaunch no lo conoce)
-`ActivityLog`, `ActivityObserver`, la migración `activity_logs` y el resource (con el marcador `WithRolePermissions`) viven en MoonOrbit. MoonLaunch (`User`, `Role`) NO importa nada de Orbit: los observers se registran con `User::observe()/Role::observe()/Setting::observe()` en MoonOrbitServiceProvider::boot() (dirección única Orbit → Launch, necesaria porque Orbit está previsto como condicional). No reintroducir un trait `LogsActivity` en MoonLaunch.
+## Media is the source of truth, not the disk
+The `media` table (disk `public`, dir `files`) replaced the old disk scan of `FileManagerPage`. The list comes from `Media::query()` (`onlyTrashed()` for the trash), uploads create rows, deletes are soft. `deleteMedia`/`restoreMedia`/`forceDeleteMedia` work by id, not by path, so there is no path to sanitize; `forceDelete` also removes the file with `Storage::disk($media->disk)->delete($media->path)`. `Media` is observed, so uploads/deletes/restores land in the activity log. `MediaField` extends `Select` (no Blade of its own) and stores the Media **id**.
 
-## Apariencia del panel: cablear por $config->set() con closures
-title, logo, logo_small y palette se resuelven en MoonOrbitServiceProvider::boot() con closures; ConfiguratorContract::get() resuelve closures vía value(). AbstractLayout::colors() lee moonshineConfig()->getPalette() en cada render, así que un selector de paleta solo persiste el class-string (allowlist en SettingsPage::palettes()) y setea 'palette'. logo_small SIEMPRE debe setearse junto a logo, o en móvil/menú minimizado MoonShine muestra su propio logo. El footer de MoonShineLayout usa moonshineConfig()->getTitle() para reflejar el setting app_name.
+## `ActivityObserver`: skip `deleted` while force-deleting
+`forceDelete()` fires `deleted` (with `isForceDeleting()` true) and then `forceDeleted`; the observer ignores the first and logs the second, so a force delete is not double-counted. `restored`/`forceDeleted` never fire on models without `SoftDeletes`, so no `registerModelEvent` is needed. `attributes()` excludes `password`, `remember_token`, `created_at`, `updated_at`, `deleted_at` — the timestamps are dropped so a restore does not pollute the log.
 
-## Layout global: setting layout + config layout_mode, sin clases nuevas
-El selector persiste 'sidebar'/'topbar' en settings (allowlist SettingsPage::layouts()) y el provider setea 'layout_mode' (closure con fallback 'sidebar'). MoonShineLayout::build() voltea $topBar/$sidebar según moonshineConfig()->get('layout_mode'); la clase sigue final, no crear subclase. Login y ErrorPage tienen #[Layout] propio, no se ven afectados. El guardado devuelve JsonResponse::redirect() a la misma page para que paleta/layout apliquen y el preview se refresque (el toast apenas se ve).
+## `media:sync` is recursive and fails loudly
+`media:sync` uses `Storage::disk()->allFiles()` (recursive, not `files()`), wraps each row in try/catch recording `mimeType()` and `size()`, and returns `FAILURE` if any file fails. `media:sync --check` lists rows whose file is missing on disk and returns 1 when it finds orphans, so it fails the build. Both are idempotent.
 
-## En tests, ConfiguratorContract singleton (ver tests.md)
-MoonShineServiceProvider registra ConfiguratorContract como bind en tests, pero `Tests\TestCase` lo fuerza a singleton antes del boot; por eso el wiring por `$config->set()` y la autorización del vendor sí son observables en feature tests. Detalle y motivo en .ai/rules/tests.md.
+## Activity log retention
+Two paths: `orbit:activity:prune {--days=90}` deletes rows older than `now()->subDays($days)`, scheduled as `Schedule::command('orbit:activity:prune')->daily()`; and `ActivityLogResource::clearAll()` (async) behind the red `topRightButtons` on `ActivityLogIndexPage`, with a confirmation modal that wipes everything. `clearAll()` requires `$this->can(Ability::MASS_DELETE)` and returns a 403 `JsonResponse` (not `abort()`, which `MethodController` would turn into 500). Prune respects the Super Admin role id.
 
-## Sujeto del activity log: Modelo · Registro
-La columna y el detalle del activity log muestran el sujeto como «Modelo · Registro» vía `ActivityLogResource::subjectPreview()` y `modelName()` (mapa traducido en `moon-orbit::ui.activity_log.models.{User,Role,Setting}`, fallback al `class_basename`). El filtro `subject_type` usa el mismo `modelName()`; no volver a mostrar `subject_label` solo, ni `class_basename` crudo.
+## Panel appearance is wired with `$config->set()` and closures
+`title`, `logo`, `logo_small` and `palette` are set in `MoonOrbitServiceProvider::boot()` as closures — `ConfiguratorContract::get()` resolves them via `value()`, so the DB is read at render, not at boot. `AbstractLayout::colors()` re-reads the palette every render, so the settings page only needs to persist the class-string (allowlist in `SettingsPage::palettes()`). `logo_small` must always be set together with `logo` or MoonShine shows its own logo on mobile. The `MoonShineLayout` footer reads `moonshineConfig()->getTitle()`, so renaming the app updates it.
 
-## La biblioteca de medios (Media) es la fuente de verdad, no el disco
-Media (tabla media, disco public, dir files) reemplaza el escaneo de disco del FileManagerPage: la lista sale de Media::query() (onlyTrashed para la papelera), las subidas crean filas y el borrado es soft delete. deleteMedia/restoreMedia/forceDeleteMedia operan por id (no por ruta), así que no hay que sanear paths; forceDelete borra además el archivo físico con Storage::disk($media->disk)->delete($media->path). Media se observa con ActivityObserver (uploads/deletes/restores quedan en el activity log) y ActivityObserver::attributes() excluye created_at/deleted_at para no ensuciar el log del restore. MediaField (extiende Select, sin Blade propio) guarda el id del Media. media:sync registra archivos del disco aún no presentes en BD (idempotente). Media vive en Orbit; MoonLaunch no puede importarlo.
+## Layout switch is a setting, not a subclass
+The selector persists `sidebar`/`topbar` (allowlist in `SettingsPage::layouts()`) and the provider sets `layout_mode` with a `sidebar` fallback. `MoonShineLayout::build()` flips `$topBar`/`$sidebar` from that key; the class stays final — do not subclass it. `Login` and `ErrorPage` carry their own `#[Layout]` and are unaffected. Saving returns `JsonResponse::redirect()` to the same page so the palette/layout apply and the preview refreshes.
+
+## Subject reads as "Model · Record"
+`ActivityLogResource::subjectPreview()` and `modelName()` render the subject as `Model · Record` via the translated map `moon-orbit::ui.activity_log.models.{User,Role,Setting}`, falling back to `class_basename`. The `subject_type` filter reuses `modelName()`; never show a bare `subject_label` or a raw `class_basename`.

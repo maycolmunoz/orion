@@ -5,8 +5,8 @@ paths:
 
 # Traits
 
-## Guardar permisos en métodos async (WithSoftDeletes)
-Los métodos async (`restore`/`forceDelete`) reciben `CrudRequestContract::getResource(): ?CrudResourceContract`. Comprobar `$resource === null || ! $resource->can(Ability::RESTORE|FORCE_DELETE)` y devolver un JsonResponse 403 (JsonResponse::make()->setStatusCode(403)->toast(...)): MethodController convierte cualquier Throwable en 500, así que `abort(403)` no devuelve 403. NO usar `$this->getResource()` del page/trait: `Page::getResource()` es `?ResourceContract` (sin `can()`), hace falta `instanceof CrudResourceContract`. En `trashActions()` calcular `canAction()` una vez y pasarlo a `->canSee()`.
+## `WithSoftDeletes` async methods get the resource from the request
+`restore`/`forceDelete` receive `CrudRequestContract::getResource(): ?CrudResourceContract`. Check `$resource === null || ! $resource->can(Ability::RESTORE | Ability::FORCE_DELETE)` and return `JsonResponse::make()->setStatusCode(403)->toast(...)` — `abort(403)` becomes a 500 (see `moon-shine.md`). Do **not** use `$this->getResource()`: `Page::getResource()` is `?ResourceContract` and has no `can()`, so an `instanceof CrudResourceContract` check is required.
 
-## El alias 'deleted' de la papelería es estable, el slug no
-La query-tag de la papelera lleva `->alias('deleted')`: sin alias, `QueryTag::getUri()` devolvería `Str::slug($label)` (eliminados/trashed según locale) y el `canSee(query-tag !== 'deleted')` del mass delete dejaría de ocultarse. Nunca reconstruir la query-tag con `Str::slug(label)`: usar el alias fijo o `$tag->getUri()`.
+## The trash query-tag alias is stable; the slug is not
+The trash query-tag carries `->alias('deleted')`. Without it `QueryTag::getUri()` would return `Str::slug($label)` (locale-dependent: *eliminados*/*trashed*), and the mass-delete `canSee(query-tag !== 'deleted')` guard would stop hiding itself. Never rebuild the tag with `Str::slug(label)` — use the fixed alias or `$tag->getUri()`.
