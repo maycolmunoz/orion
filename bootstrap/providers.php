@@ -9,5 +9,5 @@ return [
     AppServiceProvider::class,
     MoonShineServiceProvider::class,
     MoonLaunchServiceProvider::class,
-    MoonOrbitServiceProvider::class,
+    // MoonOrbitServiceProvider::class,
 ];
