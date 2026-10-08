@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\MoonLaunch\Traits;
 
 use MoonShine\Support\Enums\PageType;
@@ -33,11 +35,6 @@ trait WithProperties
     protected function with(array $with): static
     {
         return $this->set('with', $with);
-    }
-
-    protected function withPolicy(): static
-    {
-        return $this->set('withPolicy', true);
     }
 
     protected function column(string $column): static

@@ -1,13 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\MoonLaunch\Traits;
 
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Http\Response;
+use MoonShine\Contracts\Core\CrudResourceContract;
 use MoonShine\Contracts\Core\DependencyInjection\CrudRequestContract;
 use MoonShine\Contracts\UI\ActionButtonContract;
 use MoonShine\Crud\JsonResponse;
 use MoonShine\Laravel\QueryTags\QueryTag;
 use MoonShine\Support\Attributes\AsyncMethod;
+use MoonShine\Support\Enums\Ability;
 use MoonShine\Support\Enums\ToastType;
 use MoonShine\UI\Components\ActionButton;
 
@@ -18,18 +23,35 @@ trait WithSoftDeletes
      */
     protected function trashActions(): array
     {
+        $forceDelete = $this->canAction(Ability::FORCE_DELETE);
+        $restore = $this->canAction(Ability::RESTORE);
+
         return [
             ActionButton::make('')->icon('s.arrow-uturn-right')
                 ->customAttributes(['title' => __('moon-launch::ui.soft_deletes.force_delete')])
                 ->method('forceDelete', events: [$this->getListEventName()])
-                ->canSee(fn ($model) => $model->trashed())
+                ->canSee(fn ($model) => $model->trashed() && $forceDelete)
                 ->withConfirm(__('moon-launch::ui.soft_deletes.force_delete')),
             ActionButton::make('')->icon('s.arrow-uturn-left')
                 ->customAttributes(['title' => __('moon-launch::ui.soft_deletes.restore')])
                 ->method('restore', events: [$this->getListEventName()])
-                ->canSee(fn ($model) => $model->trashed())
+                ->canSee(fn ($model) => $model->trashed() && $restore)
                 ->withConfirm(__('moon-launch::ui.soft_deletes.restore')),
         ];
+    }
+
+    private function canAction(Ability $ability): bool
+    {
+        $resource = $this->getResource();
+
+        return $resource instanceof CrudResourceContract && $resource->can($ability);
+    }
+
+    private function forbiddenAction(): JsonResponse
+    {
+        return JsonResponse::make()
+            ->setStatusCode(Response::HTTP_FORBIDDEN)
+            ->toast(__('moon-launch::ui.soft_deletes.forbidden'), ToastType::ERROR);
     }
 
     /**
@@ -41,7 +63,7 @@ trait WithSoftDeletes
             QueryTag::make(
                 __('moon-launch::ui.soft_deletes.trashed'),
                 static fn (Builder $q) => $q->onlyTrashed()
-            ),
+            )->alias('deleted'),
         ];
     }
 
@@ -53,7 +75,13 @@ trait WithSoftDeletes
      */
     public function restore(CrudRequestContract $request): JsonResponse
     {
-        $item = $request->getResource()->getItem();
+        $resource = $request->getResource();
+
+        if ($resource === null || ! $resource->can(Ability::RESTORE)) {
+            return $this->forbiddenAction();
+        }
+
+        $item = $resource->getItem();
         $item->restore();
 
         return JsonResponse::make()
@@ -81,7 +109,13 @@ trait WithSoftDeletes
      */
     public function forceDelete(CrudRequestContract $request): JsonResponse
     {
-        $item = $request->getResource()->getItem();
+        $resource = $request->getResource();
+
+        if ($resource === null || ! $resource->can(Ability::FORCE_DELETE)) {
+            return $this->forbiddenAction();
+        }
+
+        $item = $resource->getItem();
         $item->forceDelete();
 
         return JsonResponse::make()

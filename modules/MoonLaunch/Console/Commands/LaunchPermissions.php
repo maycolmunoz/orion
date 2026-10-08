@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\MoonLaunch\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -24,7 +26,7 @@ class LaunchPermissions extends Command
     /**
      * Execute the console command.
      */
-    public function handle(CoreContract $moonshine)
+    public function handle(CoreContract $moonshine): int
     {
         foreach ($moonshine->getResources() as $item) {
             $this->call('moonshine-rbac:permissions', [
@@ -40,5 +42,7 @@ class LaunchPermissions extends Command
             'name' => 'Super Admin',
             '--all-permissions' => true,
         ]);
+
+        return self::SUCCESS;
     }
 }

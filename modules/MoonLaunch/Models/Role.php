@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\MoonLaunch\Models;
 
 use Spatie\Permission\Models\Role as ModelsRole;
