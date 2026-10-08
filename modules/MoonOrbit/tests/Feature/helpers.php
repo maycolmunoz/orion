@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Storage;
 use Modules\MoonLaunch\Models\Role;
 use Modules\MoonLaunch\Models\User;
 use Modules\MoonOrbit\Models\Media;
+use Modules\MoonOrbit\Providers\MoonOrbitServiceProvider;
 use Tests\TestCase;
 
 function loginAsUser(TestCase $test): User
@@ -56,4 +57,12 @@ function makeMedia(array $attributes = []): Media
     Storage::disk($media->disk)->put($media->path, 'content');
 
     return $media;
+}
+
+function moonOrbitIsActive(): bool
+{
+    /** @var array<int, class-string> $providers */
+    $providers = require dirname(__DIR__, 4).'/bootstrap/providers.php';
+
+    return in_array(MoonOrbitServiceProvider::class, $providers, true);
 }

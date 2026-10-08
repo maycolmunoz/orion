@@ -11,6 +11,10 @@ use Tests\TestCase;
 
 require_once __DIR__.'/helpers.php';
 
+if (! moonOrbitIsActive()) {
+    return;
+}
+
 /*
  * Este archivo vive fuera de tests/, así que tests/Pest.php no lo alcanza:
  * el TestCase de la app hay que vincularlo aquí.

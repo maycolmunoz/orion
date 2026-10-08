@@ -10,6 +10,10 @@ use Tests\TestCase;
 
 require_once __DIR__.'/helpers.php';
 
+if (! moonOrbitIsActive()) {
+    return;
+}
+
 final class StoringFailsFile extends UploadedFile
 {
     public function store($path = '', $options = []): string|false

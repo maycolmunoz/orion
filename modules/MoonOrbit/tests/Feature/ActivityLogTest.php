@@ -14,6 +14,10 @@ use Tests\TestCase;
 
 require_once __DIR__.'/helpers.php';
 
+if (! moonOrbitIsActive()) {
+    return;
+}
+
 uses(TestCase::class, LazilyRefreshDatabase::class);
 
 function activityLogResource(): ActivityLogResource

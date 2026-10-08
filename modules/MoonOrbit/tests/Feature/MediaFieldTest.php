@@ -9,6 +9,10 @@ use Tests\TestCase;
 
 require_once __DIR__.'/helpers.php';
 
+if (! moonOrbitIsActive()) {
+    return;
+}
+
 uses(TestCase::class, LazilyRefreshDatabase::class);
 
 it('lists the media library as selectable options', function () {
