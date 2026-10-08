@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1] - 2026-10-08
+
+### Security
+
+-   `league/commonmark` 2.10.0 → 2.10.3 — quadratic-time DoS in the GFM table extension (high), DisallowedRawHtml bypass (medium)
+-   `shell-quote` 1.9.0 → 1.12.0 — command injection via `quote()` (critical)
+-   `source-map-js` 1.2.1 → 1.2.2 — event-loop DoS through indexed source-map offsets (high)
+
 ## [1.1.0] - 2026-10-08
 
 MoonOrbit, an optional module shipped disabled by default. Requires PHP 8.4.1+.
