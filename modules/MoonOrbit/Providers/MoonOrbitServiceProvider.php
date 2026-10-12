@@ -36,27 +36,49 @@ class MoonOrbitServiceProvider extends ServiceProvider
         $this->loadJsonTranslationsFrom(__DIR__.'/../resources/lang');
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
-        $core->pages([
-            SettingsPage::class,
-            FileManagerPage::class,
-        ]);
+        $this->registerObservers();
+        $this->registerCommands();
+        $this->registerPages($core);
+        $this->registerResources($core);
+        $this->registerMenu($menu);
+        $this->registerConfig($config);
+    }
 
+    private function registerObservers(): void
+    {
         User::observe(ActivityObserver::class);
         Role::observe(ActivityObserver::class);
         Setting::observe(ActivityObserver::class);
         Media::observe(ActivityObserver::class);
+    }
 
+    private function registerCommands(): void
+    {
         $this->commands([
             MediaSync::class,
             PruneActivityLog::class,
         ]);
 
         Schedule::command('orbit:activity:prune')->daily();
+    }
 
+    private function registerPages(CoreContract $core): void
+    {
+        $core->pages([
+            SettingsPage::class,
+            FileManagerPage::class,
+        ]);
+    }
+
+    private function registerResources(CoreContract $core): void
+    {
         $core->resources([
             ActivityLogResource::class,
         ]);
+    }
 
+    private function registerMenu(MenuManagerContract $menu): void
+    {
         $menu->add(MenuRBAC::menu(
             MenuGroup::make('orbit', [
                 MenuItem::make(SettingsPage::class, 'settings.title')
@@ -74,7 +96,10 @@ class MoonOrbitServiceProvider extends ServiceProvider
                 ->icon('m.moon')
                 ->translatable('moon-orbit::ui'),
         ));
+    }
 
+    private function registerConfig(ConfiguratorContract $config): void
+    {
         $config
             ->set('title', self::appName(...))
             ->set('logo', self::logo(...))
@@ -85,7 +110,7 @@ class MoonOrbitServiceProvider extends ServiceProvider
 
     private static function canAccess(): bool
     {
-        return MoonShineAuth::getGuard()->user()?->hasRole('Super Admin') === true;
+        return MoonShineAuth::getGuard()->user()?->isSuperAdmin() === true;
     }
 
     private static function appName(): string

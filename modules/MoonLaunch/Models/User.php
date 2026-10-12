@@ -13,4 +13,9 @@ class User extends ModelsUser
     use MoonshineRBACHasRoles, SoftDeletes;
 
     const SUPER_ADMIN_ROLE_ID = 1;
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->hasRole(self::SUPER_ADMIN_ROLE_ID);
+    }
 }

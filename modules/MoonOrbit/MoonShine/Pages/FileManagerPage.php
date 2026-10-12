@@ -57,7 +57,7 @@ class FileManagerPage extends Page
 
     private function authorize(): bool
     {
-        return MoonShineAuth::getGuard()->user()?->hasRole('Super Admin') === true;
+        return MoonShineAuth::getGuard()->user()?->isSuperAdmin() === true;
     }
 
     /**

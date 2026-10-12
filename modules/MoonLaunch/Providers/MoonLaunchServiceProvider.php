@@ -24,25 +24,33 @@ class MoonLaunchServiceProvider extends ServiceProvider
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'moon-launch');
         $this->loadJsonTranslationsFrom(__DIR__.'/../resources/lang');
 
+        $this->registerCommands();
+        $this->registerResources($core);
+        $this->registerMenu($menu);
+    }
+
+    private function registerCommands(): void
+    {
         if ($this->app->runningInConsole()) {
             $this->commands([
                 LaunchInstall::class,
                 LaunchPermissions::class,
             ]);
         }
+    }
 
+    private function registerResources(CoreContract $core): void
+    {
         $core->resources([
             AdminResource::class,
             RoleResource::class,
             PermissionResource::class,
         ]);
-
-        $menu->add($this->menu());
     }
 
-    private function menu(): array
+    private function registerMenu(MenuManagerContract $menu): void
     {
-        return MenuRBAC::menu(
+        $menu->add(MenuRBAC::menu(
             MenuItem::make(Dashboard::class)->icon('s.home'),
 
             MenuGroup::make('system', [
@@ -56,6 +64,6 @@ class MoonLaunchServiceProvider extends ServiceProvider
             ])
                 ->translatable('moonshine::ui.resource')
                 ->icon('m.cube')
-        );
+        ));
     }
 }

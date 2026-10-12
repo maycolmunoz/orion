@@ -45,11 +45,19 @@ examples: `AdminResource` + `AdminIndexPage`, `RoleResource`, `ActivityLogResour
 ```php
 use Modules\MoonLaunch\Models\User;
 
+// Does any super admin exist? (used by launch:install)
 User::role(User::SUPER_ADMIN_ROLE_ID)->exists();   // User::SUPER_ADMIN_ROLE_ID === 1
+
+// Is THIS user a super admin? (used by the pages and the menu)
+$user->isSuperAdmin();
 ```
 
 > There is **no `role_id` column** on `users`. Roles live in the Spatie pivot tables, so
 > `where('role_id', 1)` returns zero rows instead of erroring.
+
+`isSuperAdmin()` checks the role **id**, never its name. The name is editable — only deleting the
+role is blocked — so `hasRole('Super Admin')` breaks the moment the role is renamed, and any other
+role carrying that name inherits the access.
 
 Permission names are `<Resource>.<ability>`. `RoleResource` refuses to delete or mass-delete the
 Super Admin role.

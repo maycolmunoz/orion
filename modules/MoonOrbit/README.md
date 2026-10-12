@@ -50,7 +50,7 @@ Media::find($record->media_id)?->url()
 register it from MoonOrbit — the dependency only points that way:
 
 ```php
-// MoonOrbitServiceProvider::boot()
+// MoonOrbitServiceProvider::registerObservers()
 YourModel::observe(ActivityObserver::class);
 ```
 

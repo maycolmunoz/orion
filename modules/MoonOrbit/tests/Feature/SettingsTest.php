@@ -16,8 +16,8 @@ if (! moonOrbitIsActive()) {
 }
 
 /*
- * Este archivo vive fuera de tests/, así que tests/Pest.php no lo alcanza:
- * el TestCase de la app hay que vincularlo aquí.
+ * This file lives outside tests/, so tests/Pest.php does not reach it:
+ * the app TestCase has to be wired here.
  */
 uses(TestCase::class, LazilyRefreshDatabase::class);
 

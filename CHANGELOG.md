@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.2] - 2026-10-12
+
+### Security
+
+-   Super Admin detected by role id instead of role name. The role name is editable, so renaming it locked the admin out of the settings page and the file manager, and a second role named `Super Admin` granted full file access
+
+### Added
+
+-   `User::isSuperAdmin()` — the single supported way to ask whether a user is the Super Admin, checked against `User::SUPER_ADMIN_ROLE_ID`
+
+### Changed
+
+-   Module provider `boot()` split into `register*` helpers; MoonLaunch's `menu()` became `registerMenu()`
+
 ## [1.1.1] - 2026-10-08
 
 ### Security
