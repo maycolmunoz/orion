@@ -14,14 +14,6 @@ if (! moonOrbitIsActive()) {
     return;
 }
 
-final class StoringFailsFile extends UploadedFile
-{
-    public function store($path = '', $options = []): string|false
-    {
-        return false;
-    }
-}
-
 /*
  * This file lives outside tests/, so tests/Pest.php does not reach it:
  * the app TestCase has to be wired here.
@@ -92,7 +84,13 @@ it('skips a file whose store fails instead of persisting an empty path', functio
     loginAsSuperAdmin($this);
 
     $real = UploadedFile::fake()->image('broken.png');
-    $file = new StoringFailsFile($real->getRealPath(), 'broken.png', $real->getMimeType(), null, true);
+    $file = new class($real->getRealPath(), 'broken.png', $real->getMimeType(), null, true) extends UploadedFile
+    {
+        public function store($path = '', $options = []): string|false
+        {
+            return false;
+        }
+    };
 
     $this->postJson(fileManagerRoute('uploadFiles'), [
         'files' => [$file],
