@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3] - 2026-10-29
+
+### Changed
+
+-   Dependencies updated and test improvements
+-   Documentation image asset updated
+
 ## [1.1.2] - 2026-10-12
 
 ### Security
